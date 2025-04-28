@@ -1,6 +1,5 @@
 #pragma once
 #include "Scene.h"
-
 class GameObjectBase;
 class GameObject;
 class MyFirstWndGame;
@@ -24,12 +23,12 @@ class PlayScene :public Scene
 private:
     void CreatePlayer(int num);
     void CreateEnemy();
-
     void UpdatePlayerInfo();
     void UpdateEnemyInfo();
 
-    GameObject* GetPlayer() const { return (GameObject*)m_GameObjectPtrTable[0]; }
-
+    GameObjectBase* m_pBackground = nullptr;
+    GameObject* GetPlayer(int num) const;
     MyFirstWndGame* m_pGame = nullptr;
+    RECT m_rect = { 0, 0, 0, 0 };
 };
 

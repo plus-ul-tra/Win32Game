@@ -15,6 +15,20 @@ void PlayScene::Initialize(NzWndBase* pWnd)  //객체 생성및 전반 관리
     assert(m_pGame != nullptr);
 
     m_GameObjectPtrTable = new GameObjectBase*[MAX_GAME_OBJECT_COUNT];
+    Background* pNewObject = new Background(ObjectType::BACKGROUND);
+    pNewObject->SetPosition(0.0f, 0.0f);
+    int width = m_pGame->GetWidth();
+    int height = m_pGame->GetHeight();
+    pNewObject->SetWidth(width);
+    pNewObject->SetHeight(height);
+
+    pNewObject->SetBitmapInfo(m_pGame->GetPlayBackgroundBitmapInfo());
+
+    m_rect.left = width / 2 - 50;
+    m_rect.top = height / 2 - 50;
+    m_rect.right = m_rect.left + 100;
+    m_rect.bottom = m_rect.top + 100;
+    m_pBackground = pNewObject;
 
     for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
     {
@@ -54,7 +68,7 @@ void PlayScene::Update(float deltaTime)
 void PlayScene::Render(HDC hDC)
 {
     assert(m_pGame != nullptr && "Game object is not initialized!");
-
+    m_pBackground->Render(hDC);
     for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
     {
         if (m_GameObjectPtrTable[i])
@@ -66,6 +80,11 @@ void PlayScene::Render(HDC hDC)
 
 void PlayScene::Finalize()
 {
+    if (m_pBackground)
+    {
+        delete m_pBackground;
+        m_pBackground = nullptr;
+    }
    if (m_GameObjectPtrTable)
    {
        for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
@@ -95,7 +114,7 @@ void PlayScene::Leave()
 }
 
 void PlayScene::CreatePlayer(int num)
-{
+{   //
     assert(num != 0 || num != 1 && "Player object already exists!");
     //assert(m_pGame != nullptr && "Game object is not initialized!");
 
@@ -110,9 +129,9 @@ void PlayScene::CreatePlayer(int num)
         pNewObject->SetPosition(1000.0f, 900.0f);
     }
 
-    pNewObject->SetSpeed(0.5f); // 일단, 임의로 설정  
-    pNewObject->SetWidth(150); // 일단, 임의로 설정
-    pNewObject->SetHeight(150); // 일단, 임의로 설정
+    pNewObject->SetSpeed(0.5f); // 임의로 설정  
+    pNewObject->SetWidth(100); // 임의로 설정
+    pNewObject->SetHeight(100); // 임의로 설정
 
     pNewObject->SetBitmapInfo(m_pGame->GetPlayerBitmapInfo());
     pNewObject->SetColliderCircle(50.0f); // 일단, 임의로 설정. 오브젝트 설정할 거 다 하고 나서 하자.
@@ -162,15 +181,21 @@ void PlayScene::CreateEnemy()
     }
 }
 
+GameObject* PlayScene::GetPlayer(int num) const
+{
+    return (GameObject*)m_GameObjectPtrTable[num];
+}
+
 void PlayScene::UpdatePlayerInfo()
 {
-    static GameObject* pPlayer = GetPlayer();
+    static GameObject* pPlayer1 = GetPlayer(0);
+    static GameObject* pPlayer2 = GetPlayer(1); // 추가
 
-    assert(pPlayer != nullptr);
+    assert(pPlayer1 != nullptr);
     assert(m_pGame != nullptr && "MyFirstWndGame is null!");
 
     Vector2f targetPos = m_pGame->PlayerTargetPosition();
-    Vector2f playerPos = pPlayer->GetPosition();
+    Vector2f playerPos = pPlayer1->GetPosition();
 
     Vector2f playerDir = targetPos - playerPos;
     float distance = playerDir.Length(); // 거리 계산
@@ -178,20 +203,20 @@ void PlayScene::UpdatePlayerInfo()
     if (distance > 50.f) //임의로 설정한 거리
     {
         playerDir.Normalize(); // 정규화
-        pPlayer->SetDirection(playerDir); // 플레이어 방향 설정
+        pPlayer1->SetDirection(playerDir); // 플레이어 방향 설정
     }
     else
     {
-        pPlayer->SetDirection(Vector2f(0, 0)); // 플레이어 정지
+        pPlayer1->SetDirection(Vector2f(0, 0)); // 플레이어 정지
     }
 }
 
-void PlayScene::UpdateEnemyInfo()
+void PlayScene::UpdateEnemyInfo() //수정
 {
-    static GameObject* pPlayer = GetPlayer();
+    static GameObject* pPlayer = GetPlayer(0);
     assert(pPlayer != nullptr);
 
-    Vector2f playerPos = GetPlayer()->GetPosition();
+    Vector2f playerPos = GetPlayer(0)->GetPosition();
     for (int i = 1; i < MAX_GAME_OBJECT_COUNT; ++i) //0번째는 언제나 플레이어!
     {
         if (m_GameObjectPtrTable[i] != nullptr)
@@ -215,4 +240,6 @@ void PlayScene::UpdateEnemyInfo()
         }
     }
 }
+
+
 

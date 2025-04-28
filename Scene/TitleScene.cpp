@@ -52,7 +52,7 @@ void TitleScene::Render(HDC hDC)
    
     m_pBackground->Render(hDC);
     
-    DrawText(hDC, m_szTitle, -1, &m_rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+    //DrawText(hDC, m_szTitle, -1, &m_rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 }
 
 void TitleScene::Finalize()

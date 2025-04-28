@@ -85,6 +85,9 @@ private:
 
     BitmapInfo* m_pBackgroundBitmapInfo = nullptr;
 
+    BitmapInfo* m_pPlayBackgroundBitmapInfo = nullptr;
+
+
 public:
 
     using Vector2f = learning::Vector2f;
@@ -95,8 +98,8 @@ public:
 
     BitmapInfo* GetPlayerBitmapInfo() const { return m_pPlayerBitmapInfo; }
     BitmapInfo* GetEnemyBitmapInfo() const { return m_pEnemyBitmapInfo; }
-
     BitmapInfo* GetBackgroundBitmapInfo() const { return m_pBackgroundBitmapInfo; }
+    BitmapInfo* GetPlayBackgroundBitmapInfo() const { return m_pPlayBackgroundBitmapInfo; }
    
 #pragma endregion
 };

@@ -10,8 +10,11 @@ PlayerTargetPosition -> direction Vec 계산용
 MousePosition은 PlayScene에서 사용예정 없음. -> Title, or ReadyScene에서 UI관련으로 사용 할 수도.?
 EnemySpawnPosition관련하여, Ball 관련으로 재사용 예정
 
+TitleScene.cpp 
+ Update에서 시간되면 다음 Scene -> 조건으로 수정
 
 월. Player1,2 분리, Physics 적용 완,
 화. resource 적용 /(Skill System.)
 수. game system 점수 판정, (skill System)
 목. UI 가능한가..?
+금. 제출

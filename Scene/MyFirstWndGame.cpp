@@ -22,7 +22,7 @@ bool MyFirstWndGame::Initialize()
     const wchar_t* className = L"MyFirstWndGame";
     const wchar_t* windowName = L"Scene Start";
 
-    if (false == __super::Create(className, windowName, 1536, 1024)) // 초기창 크기 조절
+    if (false == __super::Create(className, windowName, 1536, 995)) // 창 크기 조절
     {
         return false;
     }
@@ -40,11 +40,13 @@ bool MyFirstWndGame::Initialize()
     m_hDefaultBitmap = (HBITMAP)SelectObject(m_hBackDC, m_hBackBitmap);
 
 #pragma region resource
-    m_pPlayerBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/redbird.png");
+    m_pPlayerBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/idle.png");
     m_pEnemyBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/graybird.png");
 
     // 관리할 리소스가 늘어나면 좀 더 효율적인 방안을 고려해야 해요.
     m_pBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/background.png");
+
+    m_pPlayBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/playground.png");
 
     if (m_pPlayerBitmapInfo == nullptr || m_pEnemyBitmapInfo == nullptr
                                        || m_pBackgroundBitmapInfo == nullptr)
@@ -65,18 +67,6 @@ bool MyFirstWndGame::Initialize()
 
     m_pScenes[SceneType::SCENE_ENDING] = new EndingScene();
     m_pScenes[SceneType::SCENE_ENDING]->Initialize(this);
-  
-
-    //-> PlayScene로 이동.
-    /*m_GameObjectPtrTable = new GameObjectBase*[MAX_GAME_OBJECT_COUNT];
-
-    for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
-    {
-        m_GameObjectPtrTable[i] = nullptr;
-    }*/
-
-    // [CHECK]. 첫 번째 게임 오브젝트는 플레이어 캐릭터로 고정!
-    // [20250422] CreatePlayer(); 
 
     return true;
     
@@ -109,7 +99,7 @@ void MyFirstWndGame::Run() //key Setting
         }
         else
         {
-            Update();
+            Update(); //상태 update
             Render(); //그림
         }
     }

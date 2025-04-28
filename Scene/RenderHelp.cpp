@@ -154,7 +154,7 @@ namespace renderHelp
 
         void DeleteAllBitmaps()
         {
-            // 순회를 시작할 수 있는 BitmapInfo의 포인터가 있어야 해요.
+            
         }
 
         HRESULT m_LastError = S_OK;

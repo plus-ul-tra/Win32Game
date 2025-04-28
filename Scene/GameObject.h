@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utillity.h"
+#include "INC_Windows.h"
 #include <algorithm>
 // [CHECK]. namespace 포함해서 전방 선언해야 함
 namespace learning
@@ -21,6 +22,12 @@ enum class ObjectType
     BAll,
     NET,
     BACKGROUND,
+};
+
+struct Input {
+    bool moveLeft;
+    bool moveRight;
+    bool jump;
 };
 
 constexpr int OBJECT_NAME_LEN_MAX = 15;
@@ -49,7 +56,7 @@ public:
 
     int GetWidth() const { return m_width; } // 2025-04-22
     int GetHeight() const { return m_height; } 
-  
+    
     ObjectType Type() const { return m_type; }
 
     const char* GetName() const { return m_name; }
@@ -58,6 +65,7 @@ public:
     Vector2f GetDirection() const { return m_dir; }
 
     float GetSpeed() const { return m_speed; }
+
   
 
 protected:
@@ -71,6 +79,7 @@ protected:
 
 protected:
     ObjectType m_type;
+    Input input;
 
     int m_width = 0;
     int m_height = 0;
@@ -91,6 +100,7 @@ class GameObject : public GameObjectBase
     using BitmapInfo = renderHelp::BitmapInfo;
 
 public:
+    GameObject();
     GameObject(const GameObject&) = delete;
     GameObject(ObjectType type) : GameObjectBase(type) {}
     ~GameObject() override;
@@ -107,7 +117,7 @@ protected:
     void DrawCollider(HDC hdc);
     void DrawBitmap(HDC hdc);
 
-    void Move(float deltaTime);
+    void Move(float deltaTime); //move
     void UpdateFrame(float deltaTime);
  
     // Collider
@@ -123,7 +133,6 @@ protected:
         int x;
         int y;
     };
-    // 프레임 정보: 왜 14개냐고 물으시면 셌다고 밖에...:)
     FrameFPos m_frameXY[14] = {{ 0, 0 }, };
     int m_frameWidth = 0;
     int m_frameHeight = 0;
