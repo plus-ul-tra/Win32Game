@@ -9,7 +9,7 @@ using namespace learning;
 
 constexpr int MAX_GAME_OBJECT_COUNT = 1000;
 
-void PlayScene::Initialize(NzWndBase* pWnd)  //객체 생성및 전반 관리
+void PlayScene::Initialize(NzWndBase* pWnd)  
 {
     m_pGame = dynamic_cast<MyFirstWndGame*>(pWnd);
     assert(m_pGame != nullptr);
@@ -115,9 +115,11 @@ void PlayScene::CreatePlayer(int num)
 
     GameObject* pNewObject = new GameObject(ObjectType::PLAYER);
 
-    pNewObject->SetSpeed(0.5f); // 임의로 설정  
-    pNewObject->SetWidth(100); // 임의로 설정
-    pNewObject->SetHeight(100); // 임의로 설정
+    pNewObject->SetSpeed(0.5f);   
+    pNewObject->SetWidth(150); 
+    pNewObject->SetHeight(150); 
+    // 각각 영역으로 주기
+    pNewObject->SetBoundaryInfo(m_pGame->GetWidth(), m_pGame->GetHeight());
 
     if (num == 0) {
         pNewObject->SetName("Player1");
@@ -149,19 +151,21 @@ void PlayScene::CreateBall()
 
     //Vector2f enemyPos = m_pGame->EnemySpawnPosition();
 
-    //공 스폰 포지션
+    // Ball Spawn pos
     pNewObject->SetPosition((m_pGame->GetWidth() / 2), m_pGame->GetHeight()/2);
+    pNewObject->SetSpeed(1.0f);
+    pNewObject->SetWidth(100); 
+    pNewObject->SetHeight(100); 
 
-    pNewObject->SetSpeed(1.0f); // 일단, 임의로 설정  
-    pNewObject->SetWidth(100); // 일단, 임의로 설정
-    pNewObject->SetHeight(100); // 일단, 임의로 설정
+    // boundary 제한
+    pNewObject->SetBoundaryInfo(m_pGame->GetWidth(), m_pGame->GetHeight()); //흠
 
     pNewObject->SetBitmapInfo(m_pGame->GetEnemyBitmapInfo(),6,1); //여기
 
-    pNewObject->SetColliderCircle(50.0f); // 일단, 임의로 설정. 오브젝트 설정할 거 다 하고 나서 하자.
+    pNewObject->SetColliderCircle(50.0f);
 
     int i = 0;
-    while (++i < MAX_GAME_OBJECT_COUNT) //0번째는 언제나 플레이어!
+    while (++i < MAX_GAME_OBJECT_COUNT) 
     {
         if (nullptr == m_GameObjectPtrTable[i])
         {
@@ -177,12 +181,6 @@ void PlayScene::CreateBall()
         pNewObject = nullptr;
     }
 }
-
-//GameObject* PlayScene::GetPlayer(int num) const
-//{
-//    return (GameObject*)m_GameObjectPtrTable[num];
-//}
-
 void PlayScene::UpdatePlayerInfo() //physics
 {
     static GameObject* pPlayer1 = GetPlayer(0);
@@ -194,19 +192,19 @@ void PlayScene::UpdatePlayerInfo() //physics
 
     Vector2f moveDir1(0.0f, 0.0f);
     if (GetAsyncKeyState('W') & 0x8000) moveDir1.y -= 1.0f;
-    //if (GetAsyncKeyState('S') & 0x8000) moveDir1.y += 1.0f;
+    if (GetAsyncKeyState('S') & 0x8000) moveDir1.y += 1.0f;
     if (GetAsyncKeyState('A') & 0x8000) moveDir1.x -= 1.0f;
     if (GetAsyncKeyState('D') & 0x8000) moveDir1.x += 1.0f;
     
-        moveDir1.Normalize(); // 정규화
-        pPlayer1->SetDirection(moveDir1); // 플레이어 방향 설정
+        moveDir1.Normalize();
+        pPlayer1->SetDirection(moveDir1); 
     
     Vector2f moveDir2(0.0f, 0.0f);
     if (GetAsyncKeyState(VK_UP) & 0x8000) moveDir2.y -= 1.0f;
-    //if (GetAsyncKeyState(VK_DOWN) & 0x8000) moveDir2.y += 1.0f;
+    if (GetAsyncKeyState(VK_DOWN) & 0x8000) moveDir2.y += 1.0f;
     if (GetAsyncKeyState(VK_LEFT) & 0x8000) moveDir2.x -= 1.0f;
     if (GetAsyncKeyState(VK_RIGHT) & 0x8000) moveDir2.x += 1.0f;
-    moveDir2.Normalize(); // 정규화
+    moveDir2.Normalize(); 
     pPlayer2->SetDirection(moveDir2); // 플레이어 방향 설정
 
 }

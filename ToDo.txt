@@ -19,8 +19,23 @@ GameObject.h에 프레임 수 설정
 
 PlayScene.update -> GameObject.update -> GameObject.Move -> GOBase.Move 에서 최종 움직임 
 
+만약 다른 클래스(객체)에서 다른 객체의 멤버를 사용하려면,
+정확히는 완전히 동떨어진 객체에서의 값을 가져와서 연산에 사용 해야하는 경우는 어떻게 설계해야 좋지?
+예를 들어, Player의 움직임을 화면 혹은 game공간 객체 안으로 제한 하고 싶을때 화면 객체의 멤버에는
+당연히 width, height가 있을텐데. Player move 함수에서 이를 가져와서 써야하는 경우
+
 월. Player1,2 분리, Physics 적용 완,
 화. resource 적용 /(Skill System.)
 수. game system 점수 판정, (skill System)
 목. UI 가능한가..?
 금. 제출
+
+공부거리, (의문점)
+
+1. 만약 다른 클래스(객체)에서 다른 객체의 멤버를 사용하려면,
+정확히는 완전히 동떨어진 객체에서의 값을 가져와서 연산에 사용 해야하는 경우는 어떻게 설계해야 좋지?
+예를 들어, Player의 움직임을 화면 혹은 game공간 객체 안으로 제한 하고 싶다면, 화면 객체의 멤버에는
+당연히 width, height가 있을텐데. Player move 함수에서 이를 가져와서 써야하는 경우
+(Dependency Injection, Mediator 패턴, Using Global Variable( bad ) ) 
+그냥 Player에서 width, height 멤버를 추가하고 객체 메서드 정의로 받아오면 되겠지. 근데 그게 옳냐 이거야
+

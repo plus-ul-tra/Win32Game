@@ -188,14 +188,34 @@ void GameObjectBase::SetName(const char* name)
     m_name[OBJECT_NAME_LEN_MAX - 1] = '\0';
 }
 
+void GameObjectBase::Move(float deltaTime)
+{       //실제 움직임
+    {
+        switch (m_type) {
+        case ObjectType::PLAYER:
+            //int m_boundaryWidth, int m_boundaryHeight 사용해서 
+            //Player와 Ball은 모두 boundary에서 빠져 나갈 수 없도록
+            m_pos.x += m_dir.x * m_speed * deltaTime;
+            m_pos.y += m_dir.y * m_speed * deltaTime;
+            if (m_pos.x < 0)m_pos.x = 0;
+            if (m_pos.x > m_boundaryWidth) m_pos.x = m_boundaryWidth;
+            if (m_pos.y < 0) m_pos.y = 0;
+            if (m_pos.y + m_height > m_boundaryHeight) m_pos.y = m_boundaryHeight - m_height;
+            
+            break;
+        case ObjectType::BAll:
+            
+            break;
+        }
+    }
+}
+
 Background::~Background()
 {
 }
 
 void Background::Update(float deltaTime)
 {
-    // 배경은 업데이트가 필요없음
-    // 혹시 배경이 움직일 경우에는 이곳에 구현하면 됨
 }
 
 void Background::Render(HDC hdc)

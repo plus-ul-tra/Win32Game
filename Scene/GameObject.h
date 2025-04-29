@@ -53,8 +53,8 @@ public:
 
     void SetWidth(int width) { m_width = width; }
     void SetHeight(int height) { m_height = height; }
-
-    int GetWidth() const { return m_width; } // 2025-04-22
+    void SetBoundaryInfo(int width, int height) { m_boundaryWidth = width; m_boundaryHeight = height; }
+    int GetWidth() const { return m_width; } 
     int GetHeight() const { return m_height; } 
     
     ObjectType Type() const { return m_type; }
@@ -70,12 +70,7 @@ public:
 
 protected:
 
-    void Move(float deltaTime)
-    {   //Move Mechaism 수정 필요
-        // 공과 같은 물리 적용시, 공과 같은 움직임 나와 버릴 수 있음 확인
-        m_pos.x += m_dir.x * m_speed * deltaTime;
-        m_pos.y += m_dir.y * m_speed * deltaTime; 
-    }
+    void Move(float deltaTime);
 
 protected:
     ObjectType m_type;
@@ -89,7 +84,9 @@ protected:
 
     float m_speed = 0.0f; // 속력
     float m_gravity = 0.5f; //중력
-
+    
+    int m_boundaryWidth;
+    int m_boundaryHeight; //play 영역제한
     char m_name[OBJECT_NAME_LEN_MAX] = "";
 };
 
@@ -141,7 +138,9 @@ protected:
     float m_frameTime = 0.0f;
     float m_frameDuration = 100.0f; // 임의 설정
 };
+class Ball : public GameObject {
 
+};
 class Background : public GameObject
 {
     using BitmapInfo = renderHelp::BitmapInfo;
