@@ -22,12 +22,12 @@ class PlayScene :public Scene
   
 private:
     void CreatePlayer(int num);
-    void CreateEnemy();
+    void CreateBall();
     void UpdatePlayerInfo();
-    void UpdateEnemyInfo();
+    void UpdateBallInfo();
 
     GameObjectBase* m_pBackground = nullptr;
-    GameObject* GetPlayer(int num) const;
+    GameObject* GetPlayer(int num) const { return(GameObject*)m_GameObjectPtrTable[num]; }
     MyFirstWndGame* m_pGame = nullptr;
     RECT m_rect = { 0, 0, 0, 0 };
 };

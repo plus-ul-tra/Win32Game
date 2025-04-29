@@ -13,6 +13,12 @@ EnemySpawnPosition관련하여, Ball 관련으로 재사용 예정
 TitleScene.cpp 
  Update에서 시간되면 다음 Scene -> 조건으로 수정
 
+GameObject::SetBitmapInfo -> 스프라이트 조정
+GameObject:: AlphaBlend -> 출력 크기 조정
+GameObject.h에 프레임 수 설정
+
+PlayScene.update -> GameObject.update -> GameObject.Move -> GOBase.Move 에서 최종 움직임 
+
 월. Player1,2 분리, Physics 적용 완,
 화. resource 적용 /(Skill System.)
 수. game system 점수 판정, (skill System)

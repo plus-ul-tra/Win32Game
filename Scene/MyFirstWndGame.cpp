@@ -22,7 +22,7 @@ bool MyFirstWndGame::Initialize()
     const wchar_t* className = L"MyFirstWndGame";
     const wchar_t* windowName = L"Scene Start";
 
-    if (false == __super::Create(className, windowName, 1536, 995)) // 창 크기 조절
+    if (false == __super::Create(className, windowName, 1000, 800)) // 창 크기 조절 1536, 995
     {
         return false;
     }
@@ -40,15 +40,20 @@ bool MyFirstWndGame::Initialize()
     m_hDefaultBitmap = (HBITMAP)SelectObject(m_hBackDC, m_hBackBitmap);
 
 #pragma region resource
-    m_pPlayerBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/idle.png");
-    m_pEnemyBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/graybird.png");
+    //선택된 캐릭터 sprite Create
+    m_pPlayer1BitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/pika.png");
+    //m_pPlayer2BitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/pika.png");
+    //m_pPlayer1BitmapInfo = renderHelp::CreateFlippedBitmap(m_pPlayer1BitmapInfo);
+
+    m_pEnemyBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/ball.png");
 
     // 관리할 리소스가 늘어나면 좀 더 효율적인 방안을 고려해야 해요.
     m_pBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/background.png");
 
     m_pPlayBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/playground.png");
 
-    if (m_pPlayerBitmapInfo == nullptr || m_pEnemyBitmapInfo == nullptr
+    //
+    if (m_pPlayer1BitmapInfo == nullptr || m_pEnemyBitmapInfo == nullptr
                                        || m_pBackgroundBitmapInfo == nullptr)
     {
         std::cout << "Bitmap Load Failed!" << std::endl;
@@ -151,10 +156,7 @@ void MyFirstWndGame::ChangeScene(SceneType eSceneType) //Change Scene
 void MyFirstWndGame::FixedUpdate()
 {
     m_pScenes[m_eCurrentScene]->FixedUpdate();
- /*   if (m_EnemySpawnPos.x != 0 && m_EnemySpawnPos.y != 0)
-    {
-       CreateEnemy();
-    } */
+ 
 }
 
 void MyFirstWndGame::LogicUpdate()
@@ -250,9 +252,6 @@ void MyFirstWndGame::OnLButtonDown(int x, int y)
 {
     /*  std::cout << __FUNCTION__ << std::endl;
  std::cout << "x: " << x << ", y: " << y << std::endl;*/
-
-    m_PlayerTargetPos.x = x;
-    m_PlayerTargetPos.y = y;
  
 }
 

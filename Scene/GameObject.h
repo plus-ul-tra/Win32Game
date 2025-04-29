@@ -100,7 +100,6 @@ class GameObject : public GameObjectBase
     using BitmapInfo = renderHelp::BitmapInfo;
 
 public:
-    GameObject();
     GameObject(const GameObject&) = delete;
     GameObject(ObjectType type) : GameObjectBase(type) {}
     ~GameObject() override;
@@ -111,7 +110,7 @@ public:
     void SetColliderCircle(float radius);
     void SetColliderBox(float halfWidth, float halfHeight);
 
-    void SetBitmapInfo(BitmapInfo* bitmapInfo);
+    void SetBitmapInfo(BitmapInfo* bitmapInfo,int widthCut, int Height);
    
 protected:
     void DrawCollider(HDC hdc);
@@ -133,11 +132,11 @@ protected:
         int x;
         int y;
     };
-    FrameFPos m_frameXY[14] = {{ 0, 0 }, };
+    FrameFPos m_frameXY[28] = {{ 0, 0 }, };
     int m_frameWidth = 0;
     int m_frameHeight = 0;
     int m_frameIndex = 0;
-    int m_frameCount = 14; // 프레임 수
+    int m_frameCount = 28; // 프레임 수 
 
     float m_frameTime = 0.0f;
     float m_frameDuration = 100.0f; // 임의 설정

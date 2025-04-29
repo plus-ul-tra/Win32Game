@@ -108,35 +108,30 @@ void GameObject::DrawCollider(HDC hdc)
     DeleteObject(hPen);
 }
 
-void GameObject::SetBitmapInfo(BitmapInfo* bitmapInfo)
+//Bitmapcut
+void GameObject::SetBitmapInfo(BitmapInfo* bitmapInfo,int widthCut, int heightCut)
 {
     assert(m_pBitmapInfo == nullptr && "BitmapInfo must be null!");
     
     m_pBitmapInfo = bitmapInfo;
  
-
-    // 스프라이트 정보는 일단은 하드코딩해요. 
-    // 일단, 프레임 크기와 시간이 같다고 가정합니다.
-    m_frameWidth = m_pBitmapInfo->GetWidth() / 5;
-    m_frameHeight = m_pBitmapInfo->GetHeight() / 3;
+    m_frameWidth = m_pBitmapInfo->GetWidth() /widthCut;
+    m_frameHeight = m_pBitmapInfo->GetHeight() / heightCut;
     m_frameIndex = 0;
 
-    for (int i = 0; i < 5; ++i)
-    {
-        m_frameXY[i].x = i * m_frameWidth;
-        m_frameXY[i].y = 0;
-    }
+    const int maxFrameCount = widthCut * heightCut;
 
-    for (int i = 0; i < 5; ++i)
+    for (int y = 0; y < heightCut; ++y)
     {
-        m_frameXY[i + 5].x = i * m_frameWidth;
-        m_frameXY[i + 5].y = m_frameHeight;
-    }
+        for (int x = 0; x < widthCut; ++x)
+        {
+            int index = y * widthCut + x;
+            if (index >= maxFrameCount)
+                return;
 
-    for (int i = 0; i < 4; ++i)
-    {
-        m_frameXY[i + 10].x = i * m_frameWidth;
-        m_frameXY[i + 10].y = m_frameHeight * 2;
+            m_frameXY[index].x = x * m_frameWidth;
+            m_frameXY[index].y = y * m_frameHeight;
+        }
     }
 
 }
@@ -161,8 +156,8 @@ void GameObject::DrawBitmap(HDC hdc)
     const int srcX = m_frameXY[m_frameIndex].x;
     const int srcY = m_frameXY[m_frameIndex].y;
 
-     AlphaBlend(hdc, x, y, m_width, m_height,
-        hBitmapDC, srcX, srcY, m_frameWidth, m_frameHeight, blend);
+    AlphaBlend(hdc, x, y, m_width, m_height,
+        hBitmapDC, srcX, srcY, m_frameWidth - 2, m_frameHeight, blend);
 
     // 비트맵 핸들 복원
     SelectObject(hBitmapDC, hOldBitmap);

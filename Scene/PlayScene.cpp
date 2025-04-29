@@ -40,22 +40,16 @@ void PlayScene::Initialize(NzWndBase* pWnd)  //객체 생성및 전반 관리
 void PlayScene::FixedUpdate()
 {
     assert(m_pGame != nullptr && "Game object is not initialized!");
-
-    Vector2f enemyPos = m_pGame->EnemySpawnPosition();
-    if (enemyPos.x != 0 && enemyPos.y != 0)
-    {
-        // 사실 큐가 너무 쓰고 싶었으나 참았음
-        CreateEnemy();
-        m_pGame->ResetEnemySpawnPosition();
-    }
+    
+        //물리, 물리 판정
+       
+    
 }
 
 void PlayScene::Update(float deltaTime)
 {
     UpdatePlayerInfo();
-
-    UpdateEnemyInfo();
-
+    //UpdateBallInfo();
     for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
     {
         if (m_GameObjectPtrTable[i])
@@ -101,10 +95,11 @@ void PlayScene::Finalize()
 }
 
 void PlayScene::Enter()
-{
+{   //처음 Scene 진입, 점수 득점 시 수정
     // [CHECK]. 첫 번째 게임 오브젝트는 플레이어 캐릭터로 고정!
     CreatePlayer(0); //1P
     CreatePlayer(1); //2P
+    CreateBall(); //index로 공 위치 조정
     std::cout << "Player Created" << std::endl;
 
 }
@@ -120,21 +115,23 @@ void PlayScene::CreatePlayer(int num)
 
     GameObject* pNewObject = new GameObject(ObjectType::PLAYER);
 
-    if (num == 0) {
-        pNewObject->SetName("Player1");
-        pNewObject->SetPosition(500.0f, 900.0f);  // 하드 코딩 말고 비율로 추후수정
-    }
-    else if (num == 1) {
-        pNewObject->SetName("Player2");
-        pNewObject->SetPosition(1000.0f, 900.0f);
-    }
-
     pNewObject->SetSpeed(0.5f); // 임의로 설정  
     pNewObject->SetWidth(100); // 임의로 설정
     pNewObject->SetHeight(100); // 임의로 설정
 
-    pNewObject->SetBitmapInfo(m_pGame->GetPlayerBitmapInfo());
-    pNewObject->SetColliderCircle(50.0f); // 일단, 임의로 설정. 오브젝트 설정할 거 다 하고 나서 하자.
+    if (num == 0) {
+        pNewObject->SetName("Player1");
+        pNewObject->SetPosition(m_pGame->GetWidth()/4, m_pGame->GetHeight()- pNewObject->GetHeight());  // 하드 코딩 말고 비율로 추후수정
+    }
+    else if (num == 1) {
+        pNewObject->SetName("Player2");
+        pNewObject->SetPosition((m_pGame->GetWidth() / 4) * 3 , m_pGame->GetHeight()-pNewObject->GetHeight()); //생성 위치
+    }
+
+    
+
+    pNewObject->SetBitmapInfo(m_pGame->GetPlayerBitmapInfo(),7,4);
+    pNewObject->SetColliderCircle(20.0f); // 일단, 임의로 설정. 오브젝트 설정할 거 다 하고 나서 하자.
 
     m_GameObjectPtrTable[num] = pNewObject;
 
@@ -142,24 +139,24 @@ void PlayScene::CreatePlayer(int num)
     //2P설정
 }
 
-void PlayScene::CreateEnemy()
+void PlayScene::CreateBall()
 {
     assert(m_pGame != nullptr && "Game object is not initialized!");
 
-    GameObject* pNewObject = new GameObject(ObjectType::ENEMY);
+    GameObject* pNewObject = new GameObject(ObjectType::BAll);
 
-    pNewObject->SetName("Enemy");
+    pNewObject->SetName("Ball");
 
-    Vector2f enemyPos = m_pGame->EnemySpawnPosition();
+    //Vector2f enemyPos = m_pGame->EnemySpawnPosition();
 
-    pNewObject->SetPosition(enemyPos.x, enemyPos.y);
+    //공 스폰 포지션
+    pNewObject->SetPosition((m_pGame->GetWidth() / 2), m_pGame->GetHeight()/2);
 
-    pNewObject->SetSpeed(0.1f); // 일단, 임의로 설정  
+    pNewObject->SetSpeed(1.0f); // 일단, 임의로 설정  
     pNewObject->SetWidth(100); // 일단, 임의로 설정
     pNewObject->SetHeight(100); // 일단, 임의로 설정
 
-    
-    pNewObject->SetBitmapInfo(m_pGame->GetEnemyBitmapInfo()); //여기
+    pNewObject->SetBitmapInfo(m_pGame->GetEnemyBitmapInfo(),6,1); //여기
 
     pNewObject->SetColliderCircle(50.0f); // 일단, 임의로 설정. 오브젝트 설정할 거 다 하고 나서 하자.
 
@@ -181,64 +178,45 @@ void PlayScene::CreateEnemy()
     }
 }
 
-GameObject* PlayScene::GetPlayer(int num) const
-{
-    return (GameObject*)m_GameObjectPtrTable[num];
-}
+//GameObject* PlayScene::GetPlayer(int num) const
+//{
+//    return (GameObject*)m_GameObjectPtrTable[num];
+//}
 
-void PlayScene::UpdatePlayerInfo()
+void PlayScene::UpdatePlayerInfo() //physics
 {
     static GameObject* pPlayer1 = GetPlayer(0);
     static GameObject* pPlayer2 = GetPlayer(1); // 추가
 
     assert(pPlayer1 != nullptr);
+    assert(pPlayer2 != nullptr);
     assert(m_pGame != nullptr && "MyFirstWndGame is null!");
 
-    Vector2f targetPos = m_pGame->PlayerTargetPosition();
-    Vector2f playerPos = pPlayer1->GetPosition();
+    Vector2f moveDir1(0.0f, 0.0f);
+    if (GetAsyncKeyState('W') & 0x8000) moveDir1.y -= 1.0f;
+    //if (GetAsyncKeyState('S') & 0x8000) moveDir1.y += 1.0f;
+    if (GetAsyncKeyState('A') & 0x8000) moveDir1.x -= 1.0f;
+    if (GetAsyncKeyState('D') & 0x8000) moveDir1.x += 1.0f;
+    
+        moveDir1.Normalize(); // 정규화
+        pPlayer1->SetDirection(moveDir1); // 플레이어 방향 설정
+    
+    Vector2f moveDir2(0.0f, 0.0f);
+    if (GetAsyncKeyState(VK_UP) & 0x8000) moveDir2.y -= 1.0f;
+    //if (GetAsyncKeyState(VK_DOWN) & 0x8000) moveDir2.y += 1.0f;
+    if (GetAsyncKeyState(VK_LEFT) & 0x8000) moveDir2.x -= 1.0f;
+    if (GetAsyncKeyState(VK_RIGHT) & 0x8000) moveDir2.x += 1.0f;
+    moveDir2.Normalize(); // 정규화
+    pPlayer2->SetDirection(moveDir2); // 플레이어 방향 설정
 
-    Vector2f playerDir = targetPos - playerPos;
-    float distance = playerDir.Length(); // 거리 계산
-
-    if (distance > 50.f) //임의로 설정한 거리
-    {
-        playerDir.Normalize(); // 정규화
-        pPlayer1->SetDirection(playerDir); // 플레이어 방향 설정
-    }
-    else
-    {
-        pPlayer1->SetDirection(Vector2f(0, 0)); // 플레이어 정지
-    }
 }
 
-void PlayScene::UpdateEnemyInfo() //수정
+void PlayScene::UpdateBallInfo() //수정
 {
-    static GameObject* pPlayer = GetPlayer(0);
+    static GameObject* pPlayer = GetPlayer(3); //3으로 수정
     assert(pPlayer != nullptr);
 
-    Vector2f playerPos = GetPlayer(0)->GetPosition();
-    for (int i = 1; i < MAX_GAME_OBJECT_COUNT; ++i) //0번째는 언제나 플레이어!
-    {
-        if (m_GameObjectPtrTable[i] != nullptr)
-        {
-            GameObject* pEnemy = static_cast<GameObject*>(m_GameObjectPtrTable[i]);
-            
-            Vector2f enemyPos = pEnemy->GetPosition();
-            
-            Vector2f enemyDir = playerPos - enemyPos;
-            float distance = enemyDir.Length(); // 거리 계산
-
-            if (distance > 50.f) //임의로 설정한 거리
-            {
-                enemyDir.Normalize(); // 정규화
-                pEnemy->SetDirection(enemyDir); // 방향 설정
-            }
-            else
-            {
-                pEnemy->SetDirection(Vector2f(0, 0)); //  정지
-            }
-        }
-    }
+    // 공에 대한 물리적용
 }
 
 
