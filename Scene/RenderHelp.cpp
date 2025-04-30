@@ -226,48 +226,30 @@ namespace renderHelp
     BitmapInfo* CreateFlippedBitmap(BitmapInfo* pBitmapInfo)
     {
         if (nullptr == pBitmapInfo)
-        {
             return nullptr;
-        }
-        HBITMAP hBitmap = pBitmapInfo->GetBitmapHandle();
 
+        HBITMAP hBitmap = pBitmapInfo->GetBitmapHandle();
         if (nullptr == hBitmap)
-        {
             return nullptr;
-        }
+
+        int width = pBitmapInfo->GetWidth();
+        int height = pBitmapInfo->GetHeight();
 
         HDC hdcScreen = GetDC(nullptr);
-        HDC hdcMem = CreateCompatibleDC(hdcScreen);
-        if (!hdcMem)
-        {
-            ReleaseDC(nullptr, hdcScreen);
-            return nullptr;
-        }
-        HBITMAP hNewBitmap = nullptr;
-        HDC hdcNewMem = Create32BitMemoryDC(hdcScreen, pBitmapInfo->GetWidth(), pBitmapInfo->GetHeight(), hNewBitmap);
-        if (!hdcNewMem)
-        {
-            DeleteDC(hdcMem);
-            ReleaseDC(nullptr, hdcScreen);
-            return nullptr;
-        }
-        // 비트맵을 메모리 DC에 그리기
-        BitBlt(hdcNewMem, 0, 0, pBitmapInfo->GetWidth(), pBitmapInfo->GetHeight(), hdcMem, 0, 0, SRCCOPY);
-        // 비트맵을 반전시키기
-        for (int y = 0; y < pBitmapInfo->GetHeight(); ++y)
-        {
-            for (int x = 0; x < pBitmapInfo->GetWidth(); ++x)
-            {
-                COLORREF color = GetPixel(hdcNewMem, x, y);
-                SetPixel(hdcNewMem, x, y, RGB(255 - GetRValue(color), 255 - GetGValue(color), 255 - GetBValue(color)));
-            }
-        }
-        // 메모리 DC 해제
-        DeleteDC(hdcMem);
-        DeleteDC(hdcNewMem);
-        
-        // 새로운 비트맵 정보 생성
-        BitmapInfo* pNewBitmapInfo = GWICInitializer.CreateBitmapInfo(hNewBitmap);
+        HDC hdcSrc = CreateCompatibleDC(hdcScreen);
+        SelectObject(hdcSrc, hBitmap);
+
+        HBITMAP hFlippedBitmap = nullptr;
+        HDC hdcDest = Create32BitMemoryDC(hdcScreen, width, height, hFlippedBitmap);
+
+        // 좌우 반전 그리기
+        StretchBlt(hdcDest, 0, 0, width, height, hdcSrc, width - 1, 0, -width, height, SRCCOPY);
+
+        DeleteDC(hdcSrc);
+        DeleteDC(hdcDest);
+        ReleaseDC(nullptr, hdcScreen);
+
+        BitmapInfo* pNewBitmapInfo = GWICInitializer.CreateBitmapInfo(hFlippedBitmap);
         return pNewBitmapInfo;
     }
 }

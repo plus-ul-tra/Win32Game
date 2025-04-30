@@ -46,7 +46,6 @@ namespace renderHelp
     };
 
     BitmapInfo* CreateBitmapInfo(LPCWSTR filename);
-
     BitmapInfo* CreateFlippedBitmap(BitmapInfo* pBitmapInfo);
 }
 

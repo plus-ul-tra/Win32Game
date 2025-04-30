@@ -18,6 +18,7 @@ GameObject:: AlphaBlend -> 출력 크기 조정
 GameObject.h에 프레임 수 설정
 
 PlayScene.update -> GameObject.update -> GameObject.Move -> GOBase.Move 에서 최종 움직임 
+PlayScene.Render 에서 upcasting된 것들을 전부 그림.
 
 만약 다른 클래스(객체)에서 다른 객체의 멤버를 사용하려면,
 정확히는 완전히 동떨어진 객체에서의 값을 가져와서 연산에 사용 해야하는 경우는 어떻게 설계해야 좋지?
@@ -39,3 +40,10 @@ PlayScene.update -> GameObject.update -> GameObject.Move -> GOBase.Move 에서 �
 (Dependency Injection, Mediator 패턴, Using Global Variable( bad ) ) 
 그냥 Player에서 width, height 멤버를 추가하고 객체 메서드 정의로 받아오면 되겠지. 근데 그게 옳냐 이거야
 
+2. 상속관계가 2개 이상일때, virtual의 범위?
+
+3. Base의 Move가 virtual 이라면, 해당 방식은 명시적 호출로 연결된 함수를 호출하지 않는다!!!
+void GameObject::Move(float deltaTime)
+{
+    GameObjectBase::Move(deltaTime);
+}

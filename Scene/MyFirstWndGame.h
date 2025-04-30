@@ -80,8 +80,9 @@ private:
     using BitmapInfo = renderHelp::BitmapInfo;
 
     BitmapInfo* m_pPlayer1BitmapInfo = nullptr;
+    BitmapInfo* m_pPlayer2BitmapInfo = nullptr;
   
-    BitmapInfo* m_pEnemyBitmapInfo = nullptr;
+    BitmapInfo* m_pBallBitmapInfo = nullptr;
 
     BitmapInfo* m_pBackgroundBitmapInfo = nullptr;
 
@@ -97,7 +98,8 @@ public:
 
 
     BitmapInfo* GetPlayerBitmapInfo() const { return m_pPlayer1BitmapInfo; }
-    BitmapInfo* GetEnemyBitmapInfo() const { return m_pEnemyBitmapInfo; }
+    BitmapInfo* GetPlayer2BitmapInfo() const { return m_pPlayer2BitmapInfo; }
+    BitmapInfo* GetBallBitmapInfo() const { return m_pBallBitmapInfo; }
     BitmapInfo* GetBackgroundBitmapInfo() const { return m_pBackgroundBitmapInfo; }
     BitmapInfo* GetPlayBackgroundBitmapInfo() const { return m_pPlayBackgroundBitmapInfo; }
    

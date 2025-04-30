@@ -23,21 +23,21 @@ GameObject::~GameObject()
     }
 }
 
-void GameObject::Update(float deltaTime)
-{
-    UpdateFrame(deltaTime);
-    Move(deltaTime);
-
-    // Collider 업데이트
-    if (m_pColliderCircle)
-    {
-        m_pColliderCircle->center = m_pos;
-    } 
-    if (m_pColliderBox)
-    {
-        m_pColliderBox->center = m_pos;
-    }
-}
+//void GameObject::Update(float deltaTime)
+//{
+//    UpdateFrame(deltaTime);
+//    Move(deltaTime);
+//
+//    // Collider 업데이트
+//    if (m_pColliderCircle)
+//    {
+//        m_pColliderCircle->center = m_pos;
+//    } 
+//    if (m_pColliderBox)
+//    {
+//        m_pColliderBox->center = m_pos;
+//    }
+//}
 
 void GameObject::Render(HDC hdc)
 {
@@ -165,10 +165,10 @@ void GameObject::DrawBitmap(HDC hdc)
    
 }
 
-void GameObject::Move(float deltaTime)
-{
-    GameObjectBase::Move(deltaTime);
-}
+//void GameObject::Move(float deltaTime)
+//{
+//    //GameObjectBase::Move(deltaTime);
+//} 
 
 void GameObject::UpdateFrame(float deltaTime)
 {
@@ -188,27 +188,6 @@ void GameObjectBase::SetName(const char* name)
     m_name[OBJECT_NAME_LEN_MAX - 1] = '\0';
 }
 
-void GameObjectBase::Move(float deltaTime)
-{       //실제 움직임
-    {
-        switch (m_type) {
-        case ObjectType::PLAYER:
-            //int m_boundaryWidth, int m_boundaryHeight 사용해서 
-            //Player와 Ball은 모두 boundary에서 빠져 나갈 수 없도록
-            m_pos.x += m_dir.x * m_speed * deltaTime;
-            m_pos.y += m_dir.y * m_speed * deltaTime;
-            if (m_pos.x < 0)m_pos.x = 0;
-            if (m_pos.x > m_boundaryWidth) m_pos.x = m_boundaryWidth;
-            if (m_pos.y < 0) m_pos.y = 0;
-            if (m_pos.y + m_height > m_boundaryHeight) m_pos.y = m_boundaryHeight - m_height;
-            
-            break;
-        case ObjectType::BAll:
-            
-            break;
-        }
-    }
-}
 
 Background::~Background()
 {
@@ -221,6 +200,11 @@ void Background::Update(float deltaTime)
 void Background::Render(HDC hdc)
 {
    DrawBitmap(hdc);
+}
+
+void Background::Move(float deltaTime)
+{
+
 }
 
 void Background::SetBitmapInfo(BitmapInfo* bitmapInfo)
@@ -253,3 +237,65 @@ void Background::DrawBitmap(HDC hdc)
     SelectObject(hBitmapDC, hOldBitmap);
     DeleteDC(hBitmapDC);
 }
+
+void Player::Update(float deltaTime)
+{
+    UpdateFrame(deltaTime);
+    Move(deltaTime);
+    if (m_pColliderCircle)
+    {
+        m_pColliderCircle->center = m_pos;
+    }
+    if (m_pColliderBox)
+    {
+        m_pColliderBox->center = m_pos;
+    }
+}
+
+void Player::Move(float deltaTime)
+{
+    int padding = 40;
+    m_pos.x += m_dir.x * m_speedX * deltaTime;
+    m_pos.y += m_dir.y * m_speedY * deltaTime;
+    if (m_pos.x < padding)m_pos.x = padding;
+    if (m_pos.x > m_boundaryWidth - padding) m_pos.x = m_boundaryWidth - padding;
+    if (m_pos.y < 0) m_pos.y = 0;
+    if (m_pos.y + m_height > m_boundaryHeight) m_pos.y = m_boundaryHeight - m_height;
+}
+void Ball::Update(float deltaTime)
+{
+    UpdateFrame(deltaTime);
+    Move(deltaTime);
+    if (m_pColliderCircle)
+    {
+        m_pColliderCircle->center = m_pos;
+    }
+    if (m_pColliderBox)
+    {
+        m_pColliderBox->center = m_pos;
+    }
+}
+void Ball::Move(float deltaTime)
+{
+    m_pos.x += m_speedX;
+    m_pos.y += m_speedY;
+    if (m_pos.y + m_height > m_boundaryHeight) {
+        m_pos.y = m_boundaryHeight - m_height;
+        m_speedY *= -1.0f;
+    }
+    if (m_pos.y - m_height < 0) {
+        m_pos.y = 0 + m_height;
+        m_speedY *= -1.0f;
+    }
+    if (m_pos.x - m_width < 0) {
+        m_pos.x = m_width;
+        m_speedX *= -1.0f;
+    }
+    if (m_pos.x + m_width > m_boundaryWidth) {
+        m_pos.x = m_boundaryWidth - m_width;
+        m_speedX *= -1.0;
+    }
+
+}
+
+

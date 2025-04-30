@@ -40,12 +40,12 @@ bool MyFirstWndGame::Initialize()
     m_hDefaultBitmap = (HBITMAP)SelectObject(m_hBackDC, m_hBackBitmap);
 
 #pragma region resource
-    //선택된 캐릭터 sprite Create
+    //Player Bitmap
     m_pPlayer1BitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/pika.png");
-    //m_pPlayer2BitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/pika.png");
-    //m_pPlayer1BitmapInfo = renderHelp::CreateFlippedBitmap(m_pPlayer1BitmapInfo);
-
-    m_pEnemyBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/ball.png");
+    m_pPlayer2BitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/pika.png");
+    m_pPlayer2BitmapInfo = renderHelp::CreateFlippedBitmap(m_pPlayer2BitmapInfo);
+    //Ball
+    m_pBallBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/ball.png");
 
     // 관리할 리소스가 늘어나면 좀 더 효율적인 방안을 고려해야 해요.
     m_pBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/background.png");
@@ -53,7 +53,7 @@ bool MyFirstWndGame::Initialize()
     m_pPlayBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/playground.png");
 
     //
-    if (m_pPlayer1BitmapInfo == nullptr || m_pEnemyBitmapInfo == nullptr
+    if (m_pPlayer1BitmapInfo == nullptr || m_pBallBitmapInfo == nullptr
                                        || m_pBackgroundBitmapInfo == nullptr)
     {
         std::cout << "Bitmap Load Failed!" << std::endl;

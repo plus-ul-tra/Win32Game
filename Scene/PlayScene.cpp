@@ -7,7 +7,7 @@
 
 using namespace learning;
 
-constexpr int MAX_GAME_OBJECT_COUNT = 1000;
+constexpr int MAX_GAME_OBJECT_COUNT = 10;
 
 void PlayScene::Initialize(NzWndBase* pWnd)  
 {
@@ -67,7 +67,7 @@ void PlayScene::Render(HDC hDC)
     {
         if (m_GameObjectPtrTable[i])
         {
-            m_GameObjectPtrTable[i]->Render(hDC); //Object 들은 자신을 그릴 수 있고, 여기서 일괄로 그린다.
+            m_GameObjectPtrTable[i]->Render(hDC); //<<
         }
     }
 }
@@ -113,28 +113,29 @@ void PlayScene::CreatePlayer(int num)
     assert(num != 0 || num != 1 && "Player object already exists!");
     //assert(m_pGame != nullptr && "Game object is not initialized!");
 
-    GameObject* pNewObject = new GameObject(ObjectType::PLAYER);
-
-    pNewObject->SetSpeed(0.5f);   
+    //GameObject* pNewObject = new GameObject(ObjectType::PLAYER);
+    Player* pNewObject = new Player(ObjectType::PLAYER);
+    pNewObject->SetSpeed(0.5f,0.5f);   
     pNewObject->SetWidth(150); 
     pNewObject->SetHeight(150); 
     // 각각 영역으로 주기
-    pNewObject->SetBoundaryInfo(m_pGame->GetWidth(), m_pGame->GetHeight());
+    pNewObject->SetBoundaryInfo(m_pGame->GetWidth()+10, m_pGame->GetHeight());
 
     if (num == 0) {
         pNewObject->SetName("Player1");
-        pNewObject->SetPosition(m_pGame->GetWidth()/4, m_pGame->GetHeight()- pNewObject->GetHeight());  // 하드 코딩 말고 비율로 추후수정
+        pNewObject->SetPosition(m_pGame->GetWidth()/4, m_pGame->GetHeight()- pNewObject->GetHeight());  //비율 수정
+        pNewObject->SetBitmapInfo(m_pGame->GetPlayerBitmapInfo(), 7, 4);
     }
     else if (num == 1) {
         pNewObject->SetName("Player2");
         pNewObject->SetPosition((m_pGame->GetWidth() / 4) * 3 , m_pGame->GetHeight()-pNewObject->GetHeight()); //생성 위치
+        pNewObject->SetBitmapInfo(m_pGame->GetPlayer2BitmapInfo(), 7, 4);
     }
 
     
 
-    pNewObject->SetBitmapInfo(m_pGame->GetPlayerBitmapInfo(),7,4);
-    pNewObject->SetColliderCircle(20.0f); // 일단, 임의로 설정. 오브젝트 설정할 거 다 하고 나서 하자.
-
+    pNewObject->SetColliderCircle(40.0f); // 일단, 임의로 설정. 오브젝트 설정할 거 다 하고 나서 하자.
+    pNewObject->SetColliderBox(100.0f,100.0f);
     m_GameObjectPtrTable[num] = pNewObject;
 
 
@@ -145,22 +146,22 @@ void PlayScene::CreateBall()
 {
     assert(m_pGame != nullptr && "Game object is not initialized!");
 
-    GameObject* pNewObject = new GameObject(ObjectType::BAll);
-
+    //GameObject* pNewObject = new GameObject(ObjectType::BAll);
+    Ball* pNewObject = new Ball(ObjectType::BAll);
     pNewObject->SetName("Ball");
 
     //Vector2f enemyPos = m_pGame->EnemySpawnPosition();
 
     // Ball Spawn pos
     pNewObject->SetPosition((m_pGame->GetWidth() / 2), m_pGame->GetHeight()/2);
-    pNewObject->SetSpeed(1.0f);
+    pNewObject->SetSpeed(0.5f,0.5f);
     pNewObject->SetWidth(100); 
     pNewObject->SetHeight(100); 
 
     // boundary 제한
     pNewObject->SetBoundaryInfo(m_pGame->GetWidth(), m_pGame->GetHeight()); //흠
 
-    pNewObject->SetBitmapInfo(m_pGame->GetEnemyBitmapInfo(),6,1); //여기
+    pNewObject->SetBitmapInfo(m_pGame->GetBallBitmapInfo(),6,1); //여기
 
     pNewObject->SetColliderCircle(50.0f);
 

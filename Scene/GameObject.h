@@ -24,12 +24,6 @@ enum class ObjectType
     BACKGROUND,
 };
 
-struct Input {
-    bool moveLeft;
-    bool moveRight;
-    bool jump;
-};
-
 constexpr int OBJECT_NAME_LEN_MAX = 15;
 
 class GameObjectBase
@@ -45,10 +39,10 @@ public:
 
     virtual void Update(float deltaTime) = 0;
     virtual void Render(HDC hdc) = 0;
-
+    virtual void Move(float deltaTime) = 0;
     void SetPosition(float x, float y) { m_pos = { x, y }; }
     void SetDirection(Vector2f dir) { m_dir = dir; }
-    void SetSpeed(float speed) { m_speed = speed; }
+    void SetSpeed(float speedX, float speedY) { m_speedX = speedX; m_speedY = speedY; }
     void SetName(const char* name);
 
     void SetWidth(int width) { m_width = width; }
@@ -64,25 +58,20 @@ public:
     Vector2f GetPosition() const { return m_pos; }
     Vector2f GetDirection() const { return m_dir; }
 
-    float GetSpeed() const { return m_speed; }
+    //float GetSpeed() const { return m_speed; }
 
-  
-
-protected:
-
-    void Move(float deltaTime);
+     
 
 protected:
     ObjectType m_type;
-    Input input;
-
     int m_width = 0;
     int m_height = 0;
 
     Vector2f m_pos = { 0.0f, 0.0f };
     Vector2f m_dir = { 0.0f, 0.0f }; // 방향 (단위 벡터)
 
-    float m_speed = 0.0f; // 속력
+    float m_speedX = 0.0f; // x속력
+    float m_speedY = 0.0f;
     float m_gravity = 0.5f; //중력
     
     int m_boundaryWidth;
@@ -101,19 +90,19 @@ public:
     GameObject(ObjectType type) : GameObjectBase(type) {}
     ~GameObject() override;
 
-    void Update(float deltaTime) override;
+    virtual void Update(float deltaTime) = 0;
     void Render(HDC hdc) override;
 
     void SetColliderCircle(float radius);
     void SetColliderBox(float halfWidth, float halfHeight);
 
     void SetBitmapInfo(BitmapInfo* bitmapInfo,int widthCut, int Height);
-   
+    virtual void Move(float deltaTime) = 0 ; //move
 protected:
     void DrawCollider(HDC hdc);
     void DrawBitmap(HDC hdc);
 
-    void Move(float deltaTime); //move
+    
     void UpdateFrame(float deltaTime);
  
     // Collider
@@ -138,9 +127,30 @@ protected:
     float m_frameTime = 0.0f;
     float m_frameDuration = 100.0f; // 임의 설정
 };
-class Ball : public GameObject {
 
+class Ball : public GameObject {
+public:
+    Ball(const GameObject&) = delete;
+    Ball(ObjectType type) : GameObject(type) {}
+    void Update(float deltaTime) override;
+    void Move(float deltaTime) override;
+    //void Update(float deltaTime) override;
+protected:
+    
 };
+
+class Player : public GameObject {
+public:
+    Player(const GameObject&) = delete;
+    Player(ObjectType type) : GameObject(type) {}
+    void Update(float deltaTime) override;
+    void Move(float deltaTime) override;
+    //void Update(float deltaTime) override;
+protected:
+    
+};
+
+
 class Background : public GameObject
 {
     using BitmapInfo = renderHelp::BitmapInfo;
@@ -152,7 +162,7 @@ public:
 
     void Update(float deltaTime) override;
     void Render(HDC hdc) override;
-
+    void Move(float deltaTime) override;
     void SetBitmapInfo(BitmapInfo* bitmapInfo);
 
 protected:
