@@ -115,7 +115,7 @@ void PlayScene::CreatePlayer(int num)
 
     //GameObject* pNewObject = new GameObject(ObjectType::PLAYER);
     Player* pNewObject = new Player(ObjectType::PLAYER);
-    pNewObject->SetSpeed(0.5f,0.5f);   
+    pNewObject->SetSpeed(0.35f,0.5f);   
     pNewObject->SetWidth(150); 
     pNewObject->SetHeight(150); 
     // 각각 영역으로 주기
@@ -123,7 +123,7 @@ void PlayScene::CreatePlayer(int num)
 
     if (num == 0) {
         pNewObject->SetName("Player1");
-        pNewObject->SetPosition(m_pGame->GetWidth()/4, m_pGame->GetHeight()- pNewObject->GetHeight());  //비율 수정
+        pNewObject->SetPosition(m_pGame->GetWidth()/4, m_pGame->GetHeight()- pNewObject->GetHeight());  
         pNewObject->SetBitmapInfo(m_pGame->GetPlayerBitmapInfo(), 7, 4);
     }
     else if (num == 1) {
@@ -184,29 +184,25 @@ void PlayScene::CreateBall()
 }
 void PlayScene::UpdatePlayerInfo() //physics
 {
-    static GameObject* pPlayer1 = GetPlayer(0);
-    static GameObject* pPlayer2 = GetPlayer(1); // 추가
+    static Player* p1 = GetPlayer(0);
+    static Player* p2 = GetPlayer(1); // 추가
 
-    assert(pPlayer1 != nullptr);
-    assert(pPlayer2 != nullptr);
+    assert(p1 != nullptr);
+    assert(p2 != nullptr);
     assert(m_pGame != nullptr && "MyFirstWndGame is null!");
 
-    Vector2f moveDir1(0.0f, 0.0f);
-    if (GetAsyncKeyState('W') & 0x8000) moveDir1.y -= 1.0f;
-    if (GetAsyncKeyState('S') & 0x8000) moveDir1.y += 1.0f;
-    if (GetAsyncKeyState('A') & 0x8000) moveDir1.x -= 1.0f;
-    if (GetAsyncKeyState('D') & 0x8000) moveDir1.x += 1.0f;
-    
-        moveDir1.Normalize();
-        pPlayer1->SetDirection(moveDir1); 
-    
-    Vector2f moveDir2(0.0f, 0.0f);
-    if (GetAsyncKeyState(VK_UP) & 0x8000) moveDir2.y -= 1.0f;
-    if (GetAsyncKeyState(VK_DOWN) & 0x8000) moveDir2.y += 1.0f;
-    if (GetAsyncKeyState(VK_LEFT) & 0x8000) moveDir2.x -= 1.0f;
-    if (GetAsyncKeyState(VK_RIGHT) & 0x8000) moveDir2.x += 1.0f;
-    moveDir2.Normalize(); 
-    pPlayer2->SetDirection(moveDir2); // 플레이어 방향 설정
+    PlayerInput input1;
+    input1.moveLeft = GetAsyncKeyState('A') & 0x8000;
+    input1.moveRight = GetAsyncKeyState('D') & 0x8000;
+    input1.jump = GetAsyncKeyState('W') & 0x8000;
+
+    PlayerInput input2;
+    input2.moveLeft = GetAsyncKeyState(VK_LEFT) & 0x8000;
+    input2.moveRight = GetAsyncKeyState(VK_RIGHT) & 0x8000;
+    input2.jump = GetAsyncKeyState(VK_UP) & 0x8000;
+
+    p1->SetInput(input1);
+    p2->SetInput(input2);
 
 }
 

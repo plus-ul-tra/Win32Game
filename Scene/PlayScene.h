@@ -27,7 +27,7 @@ private:
     void UpdateBallInfo();
 
     GameObjectBase* m_pBackground = nullptr;
-    GameObject* GetPlayer(int num) const { return(GameObject*)m_GameObjectPtrTable[num]; }
+    Player* GetPlayer(int num) const { return(Player*)m_GameObjectPtrTable[num]; }  //downcast;
     MyFirstWndGame* m_pGame = nullptr;
     RECT m_rect = { 0, 0, 0, 0 };
 };

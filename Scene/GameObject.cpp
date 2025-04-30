@@ -157,7 +157,7 @@ void GameObject::DrawBitmap(HDC hdc)
     const int srcY = m_frameXY[m_frameIndex].y;
 
     AlphaBlend(hdc, x, y, m_width, m_height,
-        hBitmapDC, srcX, srcY, m_frameWidth - 2, m_frameHeight, blend);
+        hBitmapDC, srcX, srcY, m_frameWidth - 1, m_frameHeight, blend); //실제 그림
 
     // 비트맵 핸들 복원
     SelectObject(hBitmapDC, hOldBitmap);
@@ -254,13 +254,36 @@ void Player::Update(float deltaTime)
 
 void Player::Move(float deltaTime)
 {
-    int padding = 40;
-    m_pos.x += m_dir.x * m_speedX * deltaTime;
-    m_pos.y += m_dir.y * m_speedY * deltaTime;
-    if (m_pos.x < padding)m_pos.x = padding;
+   const int padding = 40;
+
+    if (m_input.moveLeft)
+        m_pos.x -= m_speedX * deltaTime;
+    if (m_input.moveRight)
+        m_pos.x += m_speedX * deltaTime;
+
+    // 점프
+    if (m_input.jump && m_isGrounded) {
+        m_velocityY = -m_jumpPower;
+        m_isGrounded = false;
+    }
+
+    // 중력
+    m_velocityY += m_gravity * deltaTime;
+    m_pos.y += m_velocityY * deltaTime;
+
+    // 바닥 충돌
+    float groundY = m_boundaryHeight - m_height;
+    if (m_pos.y >= groundY) {
+        m_pos.y = groundY;
+        m_velocityY = 0.0f;
+        m_isGrounded = true;
+    }
+
+    // 좌우 화면 경계
+    if (m_pos.x < padding) m_pos.x = padding;
     if (m_pos.x > m_boundaryWidth - padding) m_pos.x = m_boundaryWidth - padding;
-    if (m_pos.y < 0) m_pos.y = 0;
-    if (m_pos.y + m_height > m_boundaryHeight) m_pos.y = m_boundaryHeight - m_height;
+    //std::cout << m_pos.y << " " << groundY <<" " <<m_isGrounded<< std::endl;
+    
 }
 void Ball::Update(float deltaTime)
 {

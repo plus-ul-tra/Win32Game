@@ -23,7 +23,11 @@ enum class ObjectType
     NET,
     BACKGROUND,
 };
-
+struct PlayerInput {
+    bool moveLeft = false;
+    bool moveRight = false;
+    bool jump = false;
+};
 constexpr int OBJECT_NAME_LEN_MAX = 15;
 
 class GameObjectBase
@@ -72,7 +76,6 @@ protected:
 
     float m_speedX = 0.0f; // x속력
     float m_speedY = 0.0f;
-    float m_gravity = 0.5f; //중력
     
     int m_boundaryWidth;
     int m_boundaryHeight; //play 영역제한
@@ -128,6 +131,34 @@ protected:
     float m_frameDuration = 100.0f; // 임의 설정
 };
 
+class Player : public GameObject {
+public:
+    Player(const GameObject&) = delete;
+    Player(ObjectType type) : GameObject(type) {}
+    void Update(float deltaTime) override;
+    void Move(float deltaTime) override;
+    void SetInput(const PlayerInput& input) { m_input = input; }
+    //void Update(float deltaTime) override;
+protected:
+    PlayerInput m_input;
+    bool m_isGrounded = false;    
+    float m_velocityY = 0.0f;      // 
+    float m_gravity = 0.0012f; // 중력 가속도
+    float m_jumpPower = 0.8f;// 점프 시작 속도 (음수: 위로)
+    //float m_height = 100.0f;
+    
+
+
+    FrameFPos m_frameXY[2] = { { 0, 0 }, };
+    int m_frameWidth = 0;
+    int m_frameHeight = 0;
+    int m_frameIndex = 0;
+    int m_frameCount = 2; // 프레임 수 
+    float m_frameTime = 0.0f;
+    float m_frameDuration = 100.0f;
+
+};
+
 class Ball : public GameObject {
 public:
     Ball(const GameObject&) = delete;
@@ -136,19 +167,17 @@ public:
     void Move(float deltaTime) override;
     //void Update(float deltaTime) override;
 protected:
+    FrameFPos m_frameXY[1] = { { 0, 0 }, };
+    int m_frameWidth = 0;
+    int m_frameHeight = 0;
+    int m_frameIndex = 0;
+    int m_frameCount = 1; // 프레임 수 
+    float m_frameTime = 0.0f;
+    float m_frameDuration = 100.0f;
     
 };
 
-class Player : public GameObject {
-public:
-    Player(const GameObject&) = delete;
-    Player(ObjectType type) : GameObject(type) {}
-    void Update(float deltaTime) override;
-    void Move(float deltaTime) override;
-    //void Update(float deltaTime) override;
-protected:
-    
-};
+
 
 
 class Background : public GameObject

@@ -260,6 +260,6 @@ void MyFirstWndGame::OnRButtonDown(int x, int y)
     /*  std::cout << __FUNCTION__ << std::endl;
    std::cout << "x: " << x << ", y: " << y << std::endl;*/
 
-    m_EnemySpawnPos.x = x;
-    m_EnemySpawnPos.y = y;
+    /*m_EnemySpawnPos.x = x;
+    m_EnemySpawnPos.y = y;*/
 }
