@@ -17,6 +17,8 @@ namespace learning
 
 	// Circle
 	bool Intersect(ColliderCircle const& lhs, ColliderCircle const& rhs);
+	learning::Vector2f CollisionOccured(ColliderCircle const& lhs, ColliderCircle const& rhs);
+	float Colli(ColliderCircle const& lhs, ColliderCircle const& rhs);
 	// AABB
 	bool Intersect(ColliderBox const& lhs, ColliderBox const& rhs);
 }

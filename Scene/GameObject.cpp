@@ -23,26 +23,10 @@ GameObject::~GameObject()
     }
 }
 
-//void GameObject::Update(float deltaTime)
-//{
-//    UpdateFrame(deltaTime);
-//    Move(deltaTime);
-//
-//    // Collider 업데이트
-//    if (m_pColliderCircle)
-//    {
-//        m_pColliderCircle->center = m_pos;
-//    } 
-//    if (m_pColliderBox)
-//    {
-//        m_pColliderBox->center = m_pos;
-//    }
-//}
-
 void GameObject::Render(HDC hdc)
 {
     DrawBitmap(hdc);
-    DrawCollider(hdc);
+    //DrawCollider(hdc);
 }
 
 
@@ -157,7 +141,7 @@ void GameObject::DrawBitmap(HDC hdc)
     const int srcY = m_frameXY[m_frameIndex].y;
 
     AlphaBlend(hdc, x, y, m_width, m_height,
-        hBitmapDC, srcX, srcY, m_frameWidth - 1, m_frameHeight, blend); //실제 그림
+        hBitmapDC, srcX, srcY, m_frameWidth, m_frameHeight, blend); //실제 그림
 
     // 비트맵 핸들 복원
     SelectObject(hBitmapDC, hOldBitmap);
@@ -252,17 +236,42 @@ void Player::Update(float deltaTime)
     }
 }
 
-void Player::Move(float deltaTime)
+void Player::Move(float deltaTime) // 스파이크, 슬라이딩ㅓㅜ
 {
    const int padding = 40;
 
-    if (m_input.moveLeft)
+    if (!m_isSlide && m_input.moveLeft)
         m_pos.x -= m_speedX * deltaTime;
-    if (m_input.moveRight)
+    if (!m_isSlide && m_input.moveRight)
         m_pos.x += m_speedX * deltaTime;
+    if (m_isGrounded && m_input.skill && m_canSlide && !m_isSlide) {
+    m_isSlide = true;
+    m_canSlide = false;
+    m_slideTimer = 0.0f;
+    m_slideDir = m_input.moveLeft ? -1 : (m_input.moveRight ? 1 : 0);
+    }
 
+    
+    if (m_isSlide) {
+        m_pos.x += m_slideDir * m_slideSpeed * deltaTime;
+        m_slideTimer += deltaTime;
+
+    // 슬라이딩 종료 조건
+    if (m_slideTimer >= m_slideDuration) {
+        m_isSlide = false;
+        m_slideCooldownTimer = 0.0f;
+    }
+}
+
+    // 슬라이딩 쿨타임
+    if (!m_canSlide) {
+        m_slideCooldownTimer += deltaTime;
+        if (m_slideCooldownTimer >= m_slideCooldownDuration) {
+            m_canSlide = true;
+        }
+    }
     // 점프
-    if (m_input.jump && m_isGrounded) {
+    if (!m_isSlide && m_input.jump && m_isGrounded) {
         m_velocityY = -m_jumpPower;
         m_isGrounded = false;
     }
@@ -280,7 +289,7 @@ void Player::Move(float deltaTime)
     }
 
     // 좌우 화면 경계
-    if (m_pos.x < padding) m_pos.x = padding;
+    if (m_pos.x < m_boundStart + padding) m_pos.x = m_boundStart + padding;
     if (m_pos.x > m_boundaryWidth - padding) m_pos.x = m_boundaryWidth - padding;
     //std::cout << m_pos.y << " " << groundY <<" " <<m_isGrounded<< std::endl;
     
@@ -298,27 +307,65 @@ void Ball::Update(float deltaTime)
         m_pColliderBox->center = m_pos;
     }
 }
+
 void Ball::Move(float deltaTime)
-{
-    m_pos.x += m_speedX;
-    m_pos.y += m_speedY;
+{   
+    int padding = 50;
+    m_pos.x += m_dir.x * m_speedX *deltaTime;
+    m_pos.y += m_dir.y * m_speedY *deltaTime;
+    //m_pos += m_dir * 0.5f * deltaTime;
+    // spike를 했을때 is_Hit = true
+    if (!m_isHit) {
+        
+    }
+    //if (m_isHit) {
+    //    //때렸을때 중력 적용X 직선운동
+    //}
+
+    // 벽에 닿았을때 방향만 바뀌도록
     if (m_pos.y + m_height > m_boundaryHeight) {
         m_pos.y = m_boundaryHeight - m_height;
-        m_speedY *= -1.0f;
+        m_speedY *= -0.2f; //바닥
+        std::cout << m_pos.x << std::endl; // -> 500이하 p1 lose, 이상 p2 Win으로 로직
     }
-    if (m_pos.y - m_height < 0) {
-        m_pos.y = 0 + m_height;
-        m_speedY *= -1.0f;
+    if (m_pos.y - m_height < -padding) {
+        m_pos.y = -padding + m_height;
+        m_speedY *= -1.0f; //천장
     }
-    if (m_pos.x - m_width < 0) {
-        m_pos.x = m_width;
+    if (m_pos.x - m_width < -padding) {
+        m_pos.x = -padding + m_width;
         m_speedX *= -1.0f;
     }
-    if (m_pos.x + m_width > m_boundaryWidth) {
-        m_pos.x = m_boundaryWidth - m_width;
+    if (m_pos.x + m_width > m_boundaryWidth + padding) {
+        m_pos.x = m_boundaryWidth - m_width + padding;
         m_speedX *= -1.0;
     }
-
+    m_isCollision = false;
 }
+
+void Ball::CheckCollision(ColliderCircle const& p1, ColliderCircle const& p2)
+{
+    if (learning::Intersect(*m_pColliderCircle, p1) /*&& !m_isCollision*/) {
+        m_isHit = false;
+        /*std::cout << "p1와 충돌!" << std::endl;
+        std::cout << m_dir.x << " " << m_dir.y << std::endl;*/
+        m_isCollision = true;
+        //m_dir = learning::CollisionOccured(*m_pColliderCircle, p1);
+        m_dir.x = Colli(*m_pColliderCircle, p1);
+        m_speedY = -0.8f;
+        m_speedX = 0.8f;
+        
+    }
+    if (learning::Intersect(*m_pColliderCircle, p2) /*&& !m_isCollision*/) {
+        m_isHit = false;
+        //std::cout << "p2와 충돌!!" << std::endl;
+        m_isCollision = true;
+        std::cout << m_dir.x << " " << m_dir.y << std::endl;
+        m_dir.x = Colli(*m_pColliderCircle, p2);
+        m_speedY = -0.8f;
+        m_speedX = 0.8f;
+    }
+}
+
 
 

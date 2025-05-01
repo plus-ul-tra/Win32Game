@@ -50,7 +50,7 @@ bool MyFirstWndGame::Initialize()
     // 관리할 리소스가 늘어나면 좀 더 효율적인 방안을 고려해야 해요.
     m_pBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/background.png");
 
-    m_pPlayBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/playground.png");
+    m_pPlayBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/playground2.png");
 
     //
     if (m_pPlayer1BitmapInfo == nullptr || m_pBallBitmapInfo == nullptr

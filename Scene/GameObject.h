@@ -16,7 +16,7 @@ namespace renderHelp
 }
 
 enum class ObjectType
-{ //ObjType에서 정의되어야 그릴 수 있따.
+{ //ObjType
     PLAYER,
     ENEMY, //데코
     BAll,
@@ -27,6 +27,8 @@ struct PlayerInput {
     bool moveLeft = false;
     bool moveRight = false;
     bool jump = false;
+    bool skill = false;
+    
 };
 constexpr int OBJECT_NAME_LEN_MAX = 15;
 
@@ -97,10 +99,13 @@ public:
     void Render(HDC hdc) override;
 
     void SetColliderCircle(float radius);
+    ColliderCircle* GetColliderCircle() { return m_pColliderCircle; }
     void SetColliderBox(float halfWidth, float halfHeight);
 
     void SetBitmapInfo(BitmapInfo* bitmapInfo,int widthCut, int Height);
     virtual void Move(float deltaTime) = 0 ; //move
+    ColliderCircle* m_pColliderCircle = nullptr;
+    ColliderBox* m_pColliderBox = nullptr;
 protected:
     void DrawCollider(HDC hdc);
     void DrawBitmap(HDC hdc);
@@ -109,8 +114,8 @@ protected:
     void UpdateFrame(float deltaTime);
  
     // Collider
-    ColliderCircle* m_pColliderCircle = nullptr;
-    ColliderBox* m_pColliderBox = nullptr;
+    //ColliderCircle* m_pColliderCircle = nullptr;
+    //ColliderBox* m_pColliderBox = nullptr;
 
     // Bitmap 정보
     BitmapInfo* m_pBitmapInfo = nullptr;
@@ -125,7 +130,7 @@ protected:
     int m_frameWidth = 0;
     int m_frameHeight = 0;
     int m_frameIndex = 0;
-    int m_frameCount = 28; // 프레임 수 
+    int m_frameCount = 5; // 프레임 수 
 
     float m_frameTime = 0.0f;
     float m_frameDuration = 100.0f; // 임의 설정
@@ -133,47 +138,54 @@ protected:
 
 class Player : public GameObject {
 public:
+    
     Player(const GameObject&) = delete;
     Player(ObjectType type) : GameObject(type) {}
     void Update(float deltaTime) override;
     void Move(float deltaTime) override;
     void SetInput(const PlayerInput& input) { m_input = input; }
+    void SetPlayerBoundaryInfo(int start, int width, int height){m_boundStart =start, m_boundaryWidth = width; m_boundaryHeight = height; }
     //void Update(float deltaTime) override;
 protected:
     PlayerInput m_input;
-    bool m_isGrounded = false;    
-    float m_velocityY = 0.0f;      // 
+    int m_boundStart = 0;
+    bool m_isGrounded = false;
+    bool m_canSlide = true;
+    bool m_isSlide = false;
+    float m_velocityY = 0.0f;     
     float m_gravity = 0.0012f; // 중력 가속도
     float m_jumpPower = 0.8f;// 점프 시작 속도 (음수: 위로)
-    //float m_height = 100.0f;
-    
-
-
-    FrameFPos m_frameXY[2] = { { 0, 0 }, };
-    int m_frameWidth = 0;
-    int m_frameHeight = 0;
-    int m_frameIndex = 0;
-    int m_frameCount = 2; // 프레임 수 
-    float m_frameTime = 0.0f;
-    float m_frameDuration = 100.0f;
+    float m_slideDir = 0.0f;
+    float m_slideSpeed = 0.3f;
+    bool m_hasSlideInput = false;
+    float m_slideTimer = 0.0f;
+    float m_slideCooldownTimer = 0.0f;
+    float m_slideCooldownDuration = 1.0f;
+    float m_slideDuration = 0.3;
+   
 
 };
 
 class Ball : public GameObject {
+    using ColliderCircle = learning::ColliderCircle;
+    using ColliderBox = learning::ColliderBox;
 public:
     Ball(const GameObject&) = delete;
     Ball(ObjectType type) : GameObject(type) {}
     void Update(float deltaTime) override;
     void Move(float deltaTime) override;
-    //void Update(float deltaTime) override;
+    void CheckCollision(ColliderCircle const& p1, ColliderCircle const& p2);
 protected:
     FrameFPos m_frameXY[1] = { { 0, 0 }, };
+    bool m_isHit = false;
+    bool m_isCollision = false;
     int m_frameWidth = 0;
     int m_frameHeight = 0;
     int m_frameIndex = 0;
     int m_frameCount = 1; // 프레임 수 
     float m_frameTime = 0.0f;
     float m_frameDuration = 100.0f;
+
     
 };
 

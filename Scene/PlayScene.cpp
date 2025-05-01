@@ -2,6 +2,7 @@
 #include "MyFirstWndGame.h"
 #include "GameObject.h"
 #include "Utillity.h"
+#include "Collider.h"
 #include <assert.h>
 #include <iostream>
 
@@ -38,12 +39,14 @@ void PlayScene::Initialize(NzWndBase* pWnd)
 }
 
 void PlayScene::FixedUpdate()
-{
-    assert(m_pGame != nullptr && "Game object is not initialized!");
-    
-        //물리, 물리 판정
-       
-    
+{   
+    //UpdatePlayerInfo();
+    //assert(m_pGame != nullptr && "Game object is not initialized!");
+    //static Player* p1 = GetPlayer(0);
+    //static Player* p2 = GetPlayer(1); // 추가
+    //static Ball* ball = GetBall();
+    //ball->CheckCollision(*p1->m_pColliderCircle, *p2->m_pColliderCircle);
+    //    //물리, 물리 판정
 }
 
 void PlayScene::Update(float deltaTime)
@@ -119,23 +122,25 @@ void PlayScene::CreatePlayer(int num)
     pNewObject->SetWidth(150); 
     pNewObject->SetHeight(150); 
     // 각각 영역으로 주기
-    pNewObject->SetBoundaryInfo(m_pGame->GetWidth()+10, m_pGame->GetHeight());
+    //pNewObject->SetBoundaryInfo(m_pGame->GetWidth(), m_pGame->GetHeight());
 
     if (num == 0) {
         pNewObject->SetName("Player1");
-        pNewObject->SetPosition(m_pGame->GetWidth()/4, m_pGame->GetHeight()- pNewObject->GetHeight());  
+        pNewObject->SetPosition(m_pGame->GetWidth()/7, m_pGame->GetHeight()- pNewObject->GetHeight());  
+        pNewObject->SetPlayerBoundaryInfo(0,(m_pGame->GetWidth()/2)-30, m_pGame->GetHeight());
         pNewObject->SetBitmapInfo(m_pGame->GetPlayerBitmapInfo(), 7, 4);
     }
     else if (num == 1) {
         pNewObject->SetName("Player2");
-        pNewObject->SetPosition((m_pGame->GetWidth() / 4) * 3 , m_pGame->GetHeight()-pNewObject->GetHeight()); //생성 위치
+        pNewObject->SetPosition((m_pGame->GetWidth() / 7) * 6 , m_pGame->GetHeight()-pNewObject->GetHeight()); //생성 위치
+        pNewObject->SetPlayerBoundaryInfo((m_pGame->GetWidth() / 2)+30, m_pGame->GetWidth(), m_pGame->GetHeight());
         pNewObject->SetBitmapInfo(m_pGame->GetPlayer2BitmapInfo(), 7, 4);
     }
 
     
 
     pNewObject->SetColliderCircle(40.0f); // 일단, 임의로 설정. 오브젝트 설정할 거 다 하고 나서 하자.
-    pNewObject->SetColliderBox(100.0f,100.0f);
+    pNewObject->SetColliderBox(120.0f,140.0f);
     m_GameObjectPtrTable[num] = pNewObject;
 
 
@@ -153,8 +158,9 @@ void PlayScene::CreateBall()
     //Vector2f enemyPos = m_pGame->EnemySpawnPosition();
 
     // Ball Spawn pos
-    pNewObject->SetPosition((m_pGame->GetWidth() / 2), m_pGame->GetHeight()/2);
-    pNewObject->SetSpeed(0.5f,0.5f);
+    pNewObject->SetPosition((m_pGame->GetWidth() / 7), m_pGame->GetHeight()/2);
+    pNewObject->SetSpeed(0.4f,0.4f);
+    pNewObject->SetDirection({ 0.0f, 1.0f });
     pNewObject->SetWidth(100); 
     pNewObject->SetHeight(100); 
 
@@ -163,7 +169,8 @@ void PlayScene::CreateBall()
 
     pNewObject->SetBitmapInfo(m_pGame->GetBallBitmapInfo(),6,1); //여기
 
-    pNewObject->SetColliderCircle(50.0f);
+    pNewObject->SetColliderCircle(30.0f);
+    pNewObject->SetColliderBox(100.0f,100.0f);
 
     int i = 0;
     while (++i < MAX_GAME_OBJECT_COUNT) 
@@ -186,32 +193,28 @@ void PlayScene::UpdatePlayerInfo() //physics
 {
     static Player* p1 = GetPlayer(0);
     static Player* p2 = GetPlayer(1); // 추가
+    static Ball* ball = GetBall();
 
     assert(p1 != nullptr);
     assert(p2 != nullptr);
     assert(m_pGame != nullptr && "MyFirstWndGame is null!");
-
+    
     PlayerInput input1;
     input1.moveLeft = GetAsyncKeyState('A') & 0x8000;
     input1.moveRight = GetAsyncKeyState('D') & 0x8000;
     input1.jump = GetAsyncKeyState('W') & 0x8000;
-
+    input1.skill = (GetAsyncKeyState('Z') & 0x8000) != 0;
+    
     PlayerInput input2;
     input2.moveLeft = GetAsyncKeyState(VK_LEFT) & 0x8000;
     input2.moveRight = GetAsyncKeyState(VK_RIGHT) & 0x8000;
     input2.jump = GetAsyncKeyState(VK_UP) & 0x8000;
+    input2.skill = GetAsyncKeyState(VK_RETURN) & 0x8000;
 
-    p1->SetInput(input1);
+    p1->SetInput(input1); //여기서 z만 따로 주기?
     p2->SetInput(input2);
+    ball->CheckCollision(*p1->m_pColliderCircle, *p2->m_pColliderCircle);
 
-}
-
-void PlayScene::UpdateBallInfo() //수정
-{
-    static GameObject* pPlayer = GetPlayer(3); //3으로 수정
-    assert(pPlayer != nullptr);
-
-    // 공에 대한 물리적용
 }
 
 

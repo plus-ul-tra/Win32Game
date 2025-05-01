@@ -19,15 +19,16 @@ class PlayScene :public Scene
     void FixedUpdate() override;
     void Update(float deltaTime) override;
     void Render(HDC hDC) override;
-  
 private:
     void CreatePlayer(int num);
     void CreateBall();
     void UpdatePlayerInfo();
-    void UpdateBallInfo();
+    //void UpdateBallInfo();
+    
 
     GameObjectBase* m_pBackground = nullptr;
     Player* GetPlayer(int num) const { return(Player*)m_GameObjectPtrTable[num]; }  //downcast;
+    Ball* GetBall() const { return(Ball*)m_GameObjectPtrTable[2]; }
     MyFirstWndGame* m_pGame = nullptr;
     RECT m_rect = { 0, 0, 0, 0 };
 };
