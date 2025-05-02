@@ -26,7 +26,7 @@ GameObject::~GameObject()
 void GameObject::Render(HDC hdc)
 {
     DrawBitmap(hdc);
-    //DrawCollider(hdc);
+    DrawCollider(hdc);
 }
 
 
@@ -225,7 +225,19 @@ void Background::DrawBitmap(HDC hdc)
 void Player::Update(float deltaTime)
 {
     UpdateFrame(deltaTime);
+    Skill(deltaTime);
     Move(deltaTime);
+
+    if (m_isSlideOnCooldown)
+    {
+        m_slideCooldownTimer += deltaTime;
+        if (m_slideCooldownTimer >= 800.0f)
+        {
+            m_isSlideOnCooldown = false;
+            printf("슬라이딩 쿨타임 종료\n");
+        }
+    }
+    
     if (m_pColliderCircle)
     {
         m_pColliderCircle->center = m_pos;
@@ -240,42 +252,15 @@ void Player::Move(float deltaTime) // 스파이크, 슬라이딩ㅓㅜ
 {
    const int padding = 40;
 
-    if (!m_isSlide && m_input.moveLeft)
+    if (!m_isSkill && m_input.moveLeft)
         m_pos.x -= m_speedX * deltaTime;
-    if (!m_isSlide && m_input.moveRight)
+    if (!m_isSkill && m_input.moveRight)
         m_pos.x += m_speedX * deltaTime;
-    if (m_isGrounded && m_input.skill && m_canSlide && !m_isSlide) {
-    m_isSlide = true;
-    m_canSlide = false;
-    m_slideTimer = 0.0f;
-    m_slideDir = m_input.moveLeft ? -1 : (m_input.moveRight ? 1 : 0);
-    }
-
-    
-    if (m_isSlide) {
-        m_pos.x += m_slideDir * m_slideSpeed * deltaTime;
-        m_slideTimer += deltaTime;
-
-    // 슬라이딩 종료 조건
-    if (m_slideTimer >= m_slideDuration) {
-        m_isSlide = false;
-        m_slideCooldownTimer = 0.0f;
-    }
-}
-
-    // 슬라이딩 쿨타임
-    if (!m_canSlide) {
-        m_slideCooldownTimer += deltaTime;
-        if (m_slideCooldownTimer >= m_slideCooldownDuration) {
-            m_canSlide = true;
-        }
-    }
     // 점프
-    if (!m_isSlide && m_input.jump && m_isGrounded) {
+    if (!m_isSkill && m_input.jump && m_isGrounded) {
         m_velocityY = -m_jumpPower;
         m_isGrounded = false;
     }
-
     // 중력
     m_velocityY += m_gravity * deltaTime;
     m_pos.y += m_velocityY * deltaTime;
@@ -294,6 +279,25 @@ void Player::Move(float deltaTime) // 스파이크, 슬라이딩ㅓㅜ
     //std::cout << m_pos.y << " " << groundY <<" " <<m_isGrounded<< std::endl;
     
 }
+void Player::Skill(float deltaTime)
+{
+    if (m_isSkill) {
+        m_slideDir = m_input.moveLeft ? -1 : (m_input.moveRight ? 1 : 0);
+        m_slideDuration += deltaTime;
+        printf("슬라이딩 시작\n");
+        // 이동 처리
+        m_pos.x += m_slideDir * m_slideSpeed * deltaTime; // 오른쪽으로 슬라이드 예시
+
+        if (m_slideDuration >= 300.0f)//0.3초
+        {
+            m_isSkill = false;
+            printf("슬라이딩 종료\n");
+            m_slideDuration = 0;
+            m_isSlideOnCooldown = true;
+            m_slideCooldownTimer = 0.0f;
+        }
+    }
+}
 void Ball::Update(float deltaTime)
 {
     UpdateFrame(deltaTime);
@@ -311,17 +315,16 @@ void Ball::Update(float deltaTime)
 void Ball::Move(float deltaTime)
 {   
     int padding = 50;
-    m_pos.x += m_dir.x * m_speedX *deltaTime;
-    m_pos.y += m_dir.y * m_speedY *deltaTime;
-    //m_pos += m_dir * 0.5f * deltaTime;
-    // spike를 했을때 is_Hit = true
     if (!m_isHit) {
-        
+        m_pos.x += m_dir.x * m_speedX * deltaTime;
+        m_pos.y += m_dir.y * m_speedY * deltaTime;
     }
-    //if (m_isHit) {
-    //    //때렸을때 중력 적용X 직선운동
-    //}
-
+    
+    if (m_isHit) {
+        m_pos.x += m_dir.x * m_spikeRate *m_speedX * deltaTime;
+        m_pos.y += m_dir.y * m_spikeRate *m_speedY * deltaTime;
+    }
+    
     // 벽에 닿았을때 방향만 바뀌도록
     if (m_pos.y + m_height > m_boundaryHeight) {
         m_pos.y = m_boundaryHeight - m_height;
@@ -341,6 +344,7 @@ void Ball::Move(float deltaTime)
         m_speedX *= -1.0;
     }
     m_isCollision = false;
+    m_speedY += 0.0005f;
 }
 
 void Ball::CheckCollision(ColliderCircle const& p1, ColliderCircle const& p2)
@@ -367,5 +371,23 @@ void Ball::CheckCollision(ColliderCircle const& p1, ColliderCircle const& p2)
     }
 }
 
+void Ball::CollisionNet(ColliderBox const& net)
+{
+    if (learning::Intersect(*m_pColliderBox, net)) {
+        if (m_pos.y + m_height < m_boundaryHeight - 200) {
+            m_speedY *= -1.0f;
+        }
+        else {
+            m_speedX *= -1.0f;
+        }
+        
+    }
+}
 
+void Net::Update(float deltaTime)
+{
+}
 
+void Net::Move(float deltaTime)
+{
+}

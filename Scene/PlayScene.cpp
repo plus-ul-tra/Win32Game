@@ -52,7 +52,6 @@ void PlayScene::FixedUpdate()
 void PlayScene::Update(float deltaTime)
 {
     UpdatePlayerInfo();
-    //UpdateBallInfo();
     for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
     {
         if (m_GameObjectPtrTable[i])
@@ -103,7 +102,8 @@ void PlayScene::Enter()
     CreatePlayer(0); //1P
     CreatePlayer(1); //2P
     CreateBall(); //index로 공 위치 조정
-    std::cout << "Player Created" << std::endl;
+    CreateNet();
+    //std::cout << "Player Created" << std::endl;
 
 }
 
@@ -170,7 +170,7 @@ void PlayScene::CreateBall()
     pNewObject->SetBitmapInfo(m_pGame->GetBallBitmapInfo(),6,1); //여기
 
     pNewObject->SetColliderCircle(30.0f);
-    pNewObject->SetColliderBox(100.0f,100.0f);
+    pNewObject->SetColliderBox(120.0f,110.0f);
 
     int i = 0;
     while (++i < MAX_GAME_OBJECT_COUNT) 
@@ -184,7 +184,27 @@ void PlayScene::CreateBall()
 
     if (i == MAX_GAME_OBJECT_COUNT)
     {
-        // 게임 오브젝트 테이블이 가득 찼습니다.
+        delete pNewObject;
+        pNewObject = nullptr;
+    }
+}
+void PlayScene::CreateNet() {
+    Net* pNewObject = new Net(ObjectType::NET);
+    pNewObject->SetName("Net");
+    pNewObject->SetPosition((m_pGame->GetWidth() / 2), m_pGame->GetHeight() - 100);
+    pNewObject->SetColliderBox(20.0f, 350.0f);
+    int i = 0;
+    while (++i < MAX_GAME_OBJECT_COUNT)
+    {
+        if (nullptr == m_GameObjectPtrTable[i])
+        {
+            m_GameObjectPtrTable[i] = pNewObject;
+            break;
+        }
+    }
+
+    if (i == MAX_GAME_OBJECT_COUNT)
+    {
         delete pNewObject;
         pNewObject = nullptr;
     }
@@ -194,26 +214,67 @@ void PlayScene::UpdatePlayerInfo() //physics
     static Player* p1 = GetPlayer(0);
     static Player* p2 = GetPlayer(1); // 추가
     static Ball* ball = GetBall();
+    static Net* net = GetNet();
 
     assert(p1 != nullptr);
     assert(p2 != nullptr);
     assert(m_pGame != nullptr && "MyFirstWndGame is null!");
     
     PlayerInput input1;
-    input1.moveLeft = GetAsyncKeyState('A') & 0x8000;
-    input1.moveRight = GetAsyncKeyState('D') & 0x8000;
-    input1.jump = GetAsyncKeyState('W') & 0x8000;
-    input1.skill = (GetAsyncKeyState('Z') & 0x8000) != 0;
+    input1.moveLeft = GetAsyncKeyState('D') & 0x8000;
+    input1.moveRight = GetAsyncKeyState('G') & 0x8000;
+    input1.jump = GetAsyncKeyState('R') & 0x8000;
+    bool currentZPressed = (GetAsyncKeyState('Z') & 0x8000);
+    bool zDownOnce = currentZPressed && !p1->prevZPressed;
+
+    if (zDownOnce)
+    { 
+        if (p1->m_isGrounded && !p1->m_isSlideOnCooldown) {
+            //땅일때 Slide
+            p1->m_isSkill = true;
+        }
+        else {
+            //공중일때 Spike
+            if (learning::Intersect(*p1->m_pColliderBox, *ball->m_pColliderBox)) {
+                ball->m_isHit =true;
+                ball->SetDirection({ 1.0f, 0.7f });
+                printf("Spiked!\n");
+            }
+        }
+    }
+    p1->prevZPressed = currentZPressed;
+    //input1.skill = (GetAsyncKeyState('Z') & 0x8000) != 0;
     
     PlayerInput input2;
     input2.moveLeft = GetAsyncKeyState(VK_LEFT) & 0x8000;
     input2.moveRight = GetAsyncKeyState(VK_RIGHT) & 0x8000;
     input2.jump = GetAsyncKeyState(VK_UP) & 0x8000;
-    input2.skill = GetAsyncKeyState(VK_RETURN) & 0x8000;
+    //input2.skill = GetAsyncKeyState(VK_RETURN) & 0x8000;
 
+    bool currentEnterPressed = GetAsyncKeyState(VK_RETURN) & 0x8000;
+    bool enterDownOnce = currentEnterPressed && !p2->prevEnterPressed;
+    if (enterDownOnce)
+    {
+        if (p2->m_isGrounded && !p2->m_isSlideOnCooldown) {
+            //땅일때 Slide
+            p2->m_isSkill = true;
+        }
+        else {
+            //공중일때 Spike
+            if (learning::Intersect(*p2->m_pColliderBox, *ball->m_pColliderBox)) {
+                ball->m_isHit = true;
+                ball->SetDirection({ -1.0f,0.7f });
+                printf("Spiked!\n");
+            }
+        }
+    }
+
+    p2->prevEnterPressed = currentEnterPressed;
+    
     p1->SetInput(input1); //여기서 z만 따로 주기?
     p2->SetInput(input2);
     ball->CheckCollision(*p1->m_pColliderCircle, *p2->m_pColliderCircle);
+    ball->CollisionNet(*net->m_pColliderBox);
 
 }
 

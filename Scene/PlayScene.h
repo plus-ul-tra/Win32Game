@@ -22,6 +22,7 @@ class PlayScene :public Scene
 private:
     void CreatePlayer(int num);
     void CreateBall();
+    void CreateNet();
     void UpdatePlayerInfo();
     //void UpdateBallInfo();
     
@@ -29,6 +30,7 @@ private:
     GameObjectBase* m_pBackground = nullptr;
     Player* GetPlayer(int num) const { return(Player*)m_GameObjectPtrTable[num]; }  //downcast;
     Ball* GetBall() const { return(Ball*)m_GameObjectPtrTable[2]; }
+    Net* GetNet() const { return(Net*)m_GameObjectPtrTable[3]; }
     MyFirstWndGame* m_pGame = nullptr;
     RECT m_rect = { 0, 0, 0, 0 };
 };

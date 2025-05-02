@@ -18,7 +18,6 @@ namespace renderHelp
 enum class ObjectType
 { //ObjType
     PLAYER,
-    ENEMY, //데코
     BAll,
     NET,
     BACKGROUND,
@@ -99,7 +98,6 @@ public:
     void Render(HDC hdc) override;
 
     void SetColliderCircle(float radius);
-    ColliderCircle* GetColliderCircle() { return m_pColliderCircle; }
     void SetColliderBox(float halfWidth, float halfHeight);
 
     void SetBitmapInfo(BitmapInfo* bitmapInfo,int widthCut, int Height);
@@ -138,31 +136,32 @@ protected:
 
 class Player : public GameObject {
 public:
-    
+    bool prevEnterPressed = false;
+    bool prevZPressed = false;
+    bool m_isSkill = false;
+    bool m_isGrounded = false;
+    bool m_isSlideOnCooldown = false;
     Player(const GameObject&) = delete;
     Player(ObjectType type) : GameObject(type) {}
     void Update(float deltaTime) override;
     void Move(float deltaTime) override;
+    void Skill(float deltaTime);
     void SetInput(const PlayerInput& input) { m_input = input; }
     void SetPlayerBoundaryInfo(int start, int width, int height){m_boundStart =start, m_boundaryWidth = width; m_boundaryHeight = height; }
     //void Update(float deltaTime) override;
 protected:
     PlayerInput m_input;
     int m_boundStart = 0;
-    bool m_isGrounded = false;
-    bool m_canSlide = true;
-    bool m_isSlide = false;
+    
     float m_velocityY = 0.0f;     
     float m_gravity = 0.0012f; // 중력 가속도
     float m_jumpPower = 0.8f;// 점프 시작 속도 (음수: 위로)
+
     float m_slideDir = 0.0f;
-    float m_slideSpeed = 0.3f;
-    bool m_hasSlideInput = false;
-    float m_slideTimer = 0.0f;
+    float m_slideSpeed = 0.7f;
     float m_slideCooldownTimer = 0.0f;
     float m_slideCooldownDuration = 1.0f;
-    float m_slideDuration = 0.3;
-   
+    float m_slideDuration = 0.0f;
 
 };
 
@@ -170,14 +169,16 @@ class Ball : public GameObject {
     using ColliderCircle = learning::ColliderCircle;
     using ColliderBox = learning::ColliderBox;
 public:
+    bool m_isHit = true;
     Ball(const GameObject&) = delete;
     Ball(ObjectType type) : GameObject(type) {}
     void Update(float deltaTime) override;
     void Move(float deltaTime) override;
     void CheckCollision(ColliderCircle const& p1, ColliderCircle const& p2);
+    void CollisionNet(ColliderBox const& net);
 protected:
     FrameFPos m_frameXY[1] = { { 0, 0 }, };
-    bool m_isHit = false;
+    \
     bool m_isCollision = false;
     int m_frameWidth = 0;
     int m_frameHeight = 0;
@@ -185,11 +186,19 @@ protected:
     int m_frameCount = 1; // 프레임 수 
     float m_frameTime = 0.0f;
     float m_frameDuration = 100.0f;
+    float m_spikeRate = 1.8f;
 
     
 };
 
-
+class Net : public GameObject {
+    using ColliderBox = learning::ColliderBox;
+public:
+    Net(const GameObject&) = delete;
+    Net(ObjectType type) : GameObject(type) {}
+    void Update(float deltaTime) override;
+    void Move(float deltaTime) override;
+};
 
 
 class Background : public GameObject
