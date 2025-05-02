@@ -161,7 +161,6 @@ void MyFirstWndGame::FixedUpdate()
 
 void MyFirstWndGame::LogicUpdate()
 {
-    // 20250421
     m_pScenes[m_eCurrentScene]->Update(m_fDeltaTime);
   
   /*  UpdatePlayerInfo();

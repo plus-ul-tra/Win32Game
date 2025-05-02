@@ -26,7 +26,7 @@ GameObject::~GameObject()
 void GameObject::Render(HDC hdc)
 {
     DrawBitmap(hdc);
-    DrawCollider(hdc);
+    //DrawCollider(hdc);
 }
 
 
@@ -284,14 +284,14 @@ void Player::Skill(float deltaTime)
     if (m_isSkill) {
         m_slideDir = m_input.moveLeft ? -1 : (m_input.moveRight ? 1 : 0);
         m_slideDuration += deltaTime;
-        printf("슬라이딩 시작\n");
+        //printf("슬라이딩 시작\n");
         // 이동 처리
         m_pos.x += m_slideDir * m_slideSpeed * deltaTime; // 오른쪽으로 슬라이드 예시
 
         if (m_slideDuration >= 300.0f)//0.3초
         {
             m_isSkill = false;
-            printf("슬라이딩 종료\n");
+            //printf("슬라이딩 종료\n");
             m_slideDuration = 0;
             m_isSlideOnCooldown = true;
             m_slideCooldownTimer = 0.0f;
@@ -328,7 +328,7 @@ void Ball::Move(float deltaTime)
     // 벽에 닿았을때 방향만 바뀌도록
     if (m_pos.y + m_height > m_boundaryHeight) {
         m_pos.y = m_boundaryHeight - m_height;
-        m_speedY *= -0.2f; //바닥
+        m_speedY *= -0.5f; //바닥
         std::cout << m_pos.x << std::endl; // -> 500이하 p1 lose, 이상 p2 Win으로 로직
     }
     if (m_pos.y - m_height < -padding) {
@@ -364,7 +364,6 @@ void Ball::CheckCollision(ColliderCircle const& p1, ColliderCircle const& p2)
         m_isHit = false;
         //std::cout << "p2와 충돌!!" << std::endl;
         m_isCollision = true;
-        std::cout << m_dir.x << " " << m_dir.y << std::endl;
         m_dir.x = Colli(*m_pColliderCircle, p2);
         m_speedY = -0.8f;
         m_speedX = 0.8f;

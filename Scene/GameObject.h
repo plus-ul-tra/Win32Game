@@ -158,7 +158,7 @@ protected:
     float m_jumpPower = 0.8f;// 점프 시작 속도 (음수: 위로)
 
     float m_slideDir = 0.0f;
-    float m_slideSpeed = 0.7f;
+    float m_slideSpeed = 0.6f;
     float m_slideCooldownTimer = 0.0f;
     float m_slideCooldownDuration = 1.0f;
     float m_slideDuration = 0.0f;

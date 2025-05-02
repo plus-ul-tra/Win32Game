@@ -170,7 +170,7 @@ void PlayScene::CreateBall()
     pNewObject->SetBitmapInfo(m_pGame->GetBallBitmapInfo(),6,1); //¿©±â
 
     pNewObject->SetColliderCircle(30.0f);
-    pNewObject->SetColliderBox(120.0f,110.0f);
+    pNewObject->SetColliderBox(110.0f,100.0f);
 
     int i = 0;
     while (++i < MAX_GAME_OBJECT_COUNT) 
@@ -192,7 +192,7 @@ void PlayScene::CreateNet() {
     Net* pNewObject = new Net(ObjectType::NET);
     pNewObject->SetName("Net");
     pNewObject->SetPosition((m_pGame->GetWidth() / 2), m_pGame->GetHeight() - 100);
-    pNewObject->SetColliderBox(20.0f, 350.0f);
+    pNewObject->SetColliderBox(10.0f, 350.0f);
     int i = 0;
     while (++i < MAX_GAME_OBJECT_COUNT)
     {
