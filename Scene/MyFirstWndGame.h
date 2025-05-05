@@ -73,7 +73,6 @@ private:
     MOUSE_POS m_MousePos = { 0, 0 };
     MOUSE_POS m_MousePosPrev = { 0, 0 };
 
-    MOUSE_POS m_PlayerTargetPos = { 0, 0 };
     MOUSE_POS m_EnemySpawnPos = { 0, 0 };
     
 #pragma region resource
@@ -81,9 +80,9 @@ private:
 
     BitmapInfo* m_pPlayer1BitmapInfo = nullptr;
     BitmapInfo* m_pPlayer2BitmapInfo = nullptr;
-  
+    BitmapInfo* m_pKeyGuideBitmapInfo = nullptr;
     BitmapInfo* m_pBallBitmapInfo = nullptr;
-
+    BitmapInfo* m_pButtonBitmapInfo = nullptr;
     BitmapInfo* m_pBackgroundBitmapInfo = nullptr;
 
     BitmapInfo* m_pPlayBackgroundBitmapInfo = nullptr;
@@ -92,7 +91,6 @@ private:
 public:
 
     using Vector2f = learning::Vector2f;
-    Vector2f PlayerTargetPosition() const { return Vector2f(m_PlayerTargetPos.x, m_PlayerTargetPos.y); }
     Vector2f EnemySpawnPosition() const { return Vector2f(m_EnemySpawnPos.x, m_EnemySpawnPos.y); }
     void ResetEnemySpawnPosition() { m_EnemySpawnPos = { 0, 0 }; } //X
 
@@ -102,6 +100,8 @@ public:
     BitmapInfo* GetBallBitmapInfo() const { return m_pBallBitmapInfo; }
     BitmapInfo* GetBackgroundBitmapInfo() const { return m_pBackgroundBitmapInfo; }
     BitmapInfo* GetPlayBackgroundBitmapInfo() const { return m_pPlayBackgroundBitmapInfo; }
+    BitmapInfo* GetKeyGuideBitmapInfo() const { return m_pKeyGuideBitmapInfo; }
+    BitmapInfo* GetButtonBitmapInfo() const { return m_pButtonBitmapInfo; }
    
 #pragma endregion
 };

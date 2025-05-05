@@ -21,6 +21,7 @@ enum class ObjectType
     BAll,
     NET,
     BACKGROUND,
+    UI,
 };
 struct PlayerInput {
     bool moveLeft = false;
@@ -169,16 +170,19 @@ class Ball : public GameObject {
     using ColliderCircle = learning::ColliderCircle;
     using ColliderBox = learning::ColliderBox;
 public:
-    bool m_isHit = true;
     Ball(const GameObject&) = delete;
     Ball(ObjectType type) : GameObject(type) {}
     void Update(float deltaTime) override;
     void Move(float deltaTime) override;
     void CheckCollision(ColliderCircle const& p1, ColliderCircle const& p2);
     void CollisionNet(ColliderBox const& net);
+    bool m_isHit = true;
+    bool m_isScore = false;
+    int  m_winPlayer = 0;
 protected:
+
     FrameFPos m_frameXY[1] = { { 0, 0 }, };
-    \
+    void SetWinner();
     bool m_isCollision = false;
     int m_frameWidth = 0;
     int m_frameHeight = 0;
@@ -218,5 +222,30 @@ public:
 protected:
     void DrawBitmap(HDC hdc);
     // Bitmap 정보
+    BitmapInfo* m_pBitmapInfo = nullptr;
+};
+
+//button UI class 새로 
+class Ui : public GameObject
+{
+    using BitmapInfo = renderHelp::BitmapInfo;
+public:
+    Ui(const Ui&) = delete;
+    Ui(ObjectType type) : GameObject(type){}
+    ~Ui() override;
+
+    void Update(float deltaTime) override;
+    void Render(HDC hdc) override;
+    void Move(float deltaTime) override;
+    void SetBitmapInfo(BitmapInfo* bitmapInfo);
+    void SetScale(float sx, float sy) {
+        m_scaleX = sx;
+        m_scaleY = sy;
+           
+    }
+protected:
+    float m_scaleX = 1.0f;
+    float m_scaleY = 1.0f;
+    void DrawBitmap(HDC hdc);
     BitmapInfo* m_pBitmapInfo = nullptr;
 };

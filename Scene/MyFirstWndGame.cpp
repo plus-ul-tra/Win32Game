@@ -46,10 +46,10 @@ bool MyFirstWndGame::Initialize()
     m_pPlayer2BitmapInfo = renderHelp::CreateFlippedBitmap(m_pPlayer2BitmapInfo);
     //Ball
     m_pBallBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/ball.png");
-
-    // 관리할 리소스가 늘어나면 좀 더 효율적인 방안을 고려해야 해요.
-    m_pBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/background.png");
-
+    //UI
+    m_pBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/RealTitle.png");
+    m_pKeyGuideBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/ButtonGuide.png");
+    m_pButtonBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/Button.png");
     m_pPlayBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/playground2.png");
 
     //
@@ -125,20 +125,6 @@ void MyFirstWndGame::Finalize()
         }
     }
 
-  /*  if (m_GameObjectPtrTable)
-    {
-        for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
-        {
-            if (m_GameObjectPtrTable[i])
-            {
-                delete m_GameObjectPtrTable[i];
-                m_GameObjectPtrTable[i] = nullptr;
-            }
-        }
-
-       delete [] m_GameObjectPtrTable;
-    }*/
-
     __super::Destroy();
 
 }
@@ -163,15 +149,6 @@ void MyFirstWndGame::LogicUpdate()
 {
     m_pScenes[m_eCurrentScene]->Update(m_fDeltaTime);
   
-  /*  UpdatePlayerInfo();
-
-    for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
-    {
-        if (m_GameObjectPtrTable[i])
-        {
-            m_GameObjectPtrTable[i]->Update(m_fDeltaTime);
-        }
-    }*/
 }
 
 
@@ -195,19 +172,7 @@ void MyFirstWndGame::Render()
 {
     //Clear the back buffer
     ::PatBlt(m_hBackDC, 0, 0, m_width, m_height, WHITENESS);
-  
-    //메모리 DC에 그리기
-  /*  for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
-    {
-        if (m_GameObjectPtrTable[i])
-        {
-            m_GameObjectPtrTable[i]->Render(m_hBackDC);
-        }
-    }*/
-
     m_pScenes[m_eCurrentScene]->Render(m_hBackDC);
-
-    //메모리 DC에 그려진 결과를 실제 DC(m_hFrontDC)로 복사
     BitBlt(m_hFrontDC, 0, 0, m_width, m_height, m_hBackDC, 0, 0, SRCCOPY);
 
 }
@@ -243,14 +208,16 @@ void MyFirstWndGame::OnMouseMove(int x, int y)
 {
  /*   std::cout << __FUNCTION__ << std::endl;   
     std::cout << "x: " << x << ", y: " << y << std::endl;*/
-    m_MousePosPrev = m_MousePos;
-    m_MousePos = { x, y };
+    /*m_MousePosPrev = m_MousePos;
+    m_MousePos = { x, y };*/
 }
 
 void MyFirstWndGame::OnLButtonDown(int x, int y)
 {
-    /*  std::cout << __FUNCTION__ << std::endl;
- std::cout << "x: " << x << ", y: " << y << std::endl;*/
+      std::cout << __FUNCTION__ << std::endl;
+ std::cout << "x: " << x << ", y: " << y << std::endl;
+ m_EnemySpawnPos.x = x;
+ m_EnemySpawnPos.y = y;
  
 }
 
@@ -259,6 +226,5 @@ void MyFirstWndGame::OnRButtonDown(int x, int y)
     /*  std::cout << __FUNCTION__ << std::endl;
    std::cout << "x: " << x << ", y: " << y << std::endl;*/
 
-    /*m_EnemySpawnPos.x = x;
-    m_EnemySpawnPos.y = y;*/
+    
 }

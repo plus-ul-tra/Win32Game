@@ -328,8 +328,8 @@ void Ball::Move(float deltaTime)
     // 벽에 닿았을때 방향만 바뀌도록
     if (m_pos.y + m_height > m_boundaryHeight) {
         m_pos.y = m_boundaryHeight - m_height;
-        m_speedY *= -0.5f; //바닥
-        std::cout << m_pos.x << std::endl; // -> 500이하 p1 lose, 이상 p2 Win으로 로직
+        m_speedY *= -0.4f; //바닥
+        SetWinner();        
     }
     if (m_pos.y - m_height < -padding) {
         m_pos.y = -padding + m_height;
@@ -344,7 +344,7 @@ void Ball::Move(float deltaTime)
         m_speedX *= -1.0;
     }
     m_isCollision = false;
-    m_speedY += 0.0005f;
+    m_speedY += 0.0010f;
 }
 
 void Ball::CheckCollision(ColliderCircle const& p1, ColliderCircle const& p2)
@@ -383,6 +383,22 @@ void Ball::CollisionNet(ColliderBox const& net)
     }
 }
 
+void Ball::SetWinner()
+{
+    //std::cout << m_pos.x << std::endl; 
+    m_isScore = true;
+    if (m_pos.x < 500) {
+        //player2 Win
+        std::cout << "p2 win" << std::endl;
+        m_winPlayer = 2;
+    }
+    else {
+        //player1 Win
+        std::cout << "p1 win" << std::endl;
+        m_winPlayer = 1;
+    }
+}
+
 void Net::Update(float deltaTime)
 {
 }
@@ -390,3 +406,57 @@ void Net::Update(float deltaTime)
 void Net::Move(float deltaTime)
 {
 }
+
+Ui::~Ui()
+{
+}
+
+void Ui::Update(float deltaTime)
+{
+}
+
+void Ui::Render(HDC hdc)
+{
+    DrawBitmap(hdc);
+}
+
+void Ui::Move(float deltaTime)
+{
+}
+
+void Ui::SetBitmapInfo(BitmapInfo* bitmapInfo)
+{
+    assert(m_pBitmapInfo == nullptr && "BitmapInfo must be null!");
+
+    m_pBitmapInfo = bitmapInfo;
+}
+
+void Ui::DrawBitmap(HDC hdc)
+{
+    
+    if (m_pBitmapInfo == nullptr)return;
+    if (m_pBitmapInfo->GetBitmapHandle() == nullptr)return;
+    
+    HDC hBitmapDC = CreateCompatibleDC(hdc);
+    HBITMAP hOldBitmap = (HBITMAP)SelectObject(hBitmapDC, m_pBitmapInfo->GetBitmapHandle());
+
+    BLENDFUNCTION blend = { 0 };
+    blend.BlendOp = AC_SRC_OVER;
+    blend.SourceConstantAlpha = 255;
+    blend.AlphaFormat = AC_SRC_ALPHA;
+
+    int drawWidth = static_cast<int>(m_width * m_scaleX);
+    int drawHeight = static_cast<int>(m_height * m_scaleY);
+
+    // 중심 기준 위치
+    int drawX = static_cast<int>(m_pos.x - drawWidth / 2);
+    int drawY = static_cast<int>(m_pos.y - drawHeight / 2);
+    //std::cout << "Draw KeyGuide" << std::endl;
+    AlphaBlend(hdc, drawX, drawY, drawWidth, drawHeight,
+        hBitmapDC, 0, 0, m_width, m_height, blend);
+    
+    SelectObject(hBitmapDC, hOldBitmap);
+    DeleteDC(hBitmapDC);
+}
+
+

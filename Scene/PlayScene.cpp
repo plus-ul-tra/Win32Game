@@ -51,6 +51,14 @@ void PlayScene::FixedUpdate()
 
 void PlayScene::Update(float deltaTime)
 {
+    if (m_isScore) {
+        m_roundTimer -= deltaTime;
+        if (m_roundTimer <= 0.0f) {
+            SetNewRound(); // 공과 플레이어 위치 초기화
+            m_isScore = false;
+        }
+        return; // 점수 후 대기 상태이므로 나머지 업데이트 생략
+    }
     UpdatePlayerInfo();
     for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
     {
@@ -63,7 +71,7 @@ void PlayScene::Update(float deltaTime)
 
 void PlayScene::Render(HDC hDC)
 {
-    assert(m_pGame != nullptr && "Game object is not initialized!");
+    assert(m_pGame != nullptr && "Game object is not initialized!"); 
     m_pBackground->Render(hDC);
     for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
     {
@@ -72,6 +80,29 @@ void PlayScene::Render(HDC hDC)
             m_GameObjectPtrTable[i]->Render(hDC); //<<
         }
     }
+}
+
+void PlayScene::SetNewRound()
+{
+    static Player* p1 = GetPlayer(0);
+    static Player* p2 = GetPlayer(1); // 추가
+    static Ball* ball = GetBall();
+        p1->SetPosition(m_pGame->GetWidth() / 7, m_pGame->GetHeight() - p1->GetHeight());
+        p2->SetPosition((m_pGame->GetWidth() / 7) * 6, m_pGame->GetHeight() - p2->GetHeight());
+        ball->SetSpeed(0.4f, 0.4f);
+        ball->SetDirection({ 0.0f, 1.0f });
+        if (m_winner == 1) {
+            ball->SetPosition((m_pGame->GetWidth() / 7), m_pGame->GetHeight() / 2);
+            m_player1Score++;
+        }
+        else if (m_winner == 2) {
+            ball->SetPosition((m_pGame->GetWidth() / 7) * 6, m_pGame->GetHeight() / 2);
+            m_player2Score++;
+        }
+        std::cout << m_player1Score << ":" << m_player2Score << std::endl;
+        m_isScore = false;
+        m_roundTimer = 1000.0f;
+
 }
 
 void PlayScene::Finalize()
@@ -97,18 +128,16 @@ void PlayScene::Finalize()
 }
 
 void PlayScene::Enter()
-{   //처음 Scene 진입, 점수 득점 시 수정
-    // [CHECK]. 첫 번째 게임 오브젝트는 플레이어 캐릭터로 고정!
+{ 
     CreatePlayer(0); //1P
     CreatePlayer(1); //2P
-    CreateBall(); //index로 공 위치 조정
+    CreateBall(); 
     CreateNet();
-    //std::cout << "Player Created" << std::endl;
-
 }
 
 void PlayScene::Leave()
 {
+
 }
 
 void PlayScene::CreatePlayer(int num)
@@ -139,7 +168,7 @@ void PlayScene::CreatePlayer(int num)
 
     
 
-    pNewObject->SetColliderCircle(40.0f); // 일단, 임의로 설정. 오브젝트 설정할 거 다 하고 나서 하자.
+    pNewObject->SetColliderCircle(60.0f); // 일단, 임의로 설정. 오브젝트 설정할 거 다 하고 나서 하자.
     pNewObject->SetColliderBox(120.0f,140.0f);
     m_GameObjectPtrTable[num] = pNewObject;
 
@@ -275,6 +304,9 @@ void PlayScene::UpdatePlayerInfo() //physics
     p2->SetInput(input2);
     ball->CheckCollision(*p1->m_pColliderCircle, *p2->m_pColliderCircle);
     ball->CollisionNet(*net->m_pColliderBox);
+    m_isScore = ball->m_isScore;
+    m_winner = ball->m_winPlayer;
+    ball->m_isScore = false;
 
 }
 

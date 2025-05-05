@@ -4,6 +4,7 @@ class GameObjectBase;
 class GameObject;
 class MyFirstWndGame;
 
+constexpr int MaxScore = 10;
 class PlayScene :public Scene
 {
  public:
@@ -19,7 +20,14 @@ class PlayScene :public Scene
     void FixedUpdate() override;
     void Update(float deltaTime) override;
     void Render(HDC hDC) override;
+    void SetNewRound();
 private:
+    float m_roundTimer = 1500.0f; // next round 
+    bool m_isScore = false;
+    int m_winner = 0;
+    int m_player1Score = 0;
+    int m_player2Score = 0;
+
     void CreatePlayer(int num);
     void CreateBall();
     void CreateNet();

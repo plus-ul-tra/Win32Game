@@ -22,10 +22,13 @@ public:
     void Render(HDC hDC) override;
 
 private:
-
+    learning::Vector2f mousepos = {0,0};
     GameObjectBase* m_pBackground = nullptr;
-    //GameObjectBase* m_pStartButton = nullptr;
-
+    GameObjectBase* m_pStartButton = nullptr;
+    GameObjectBase* m_pKeyGuideButton = nullptr;
+    GameObjectBase* m_pKeyGuide = nullptr;
+    GameObjectBase* m_pButton = nullptr;
+    bool m_isShowGuide = false;
     MyFirstWndGame* m_pGame = nullptr;
 
     WCHAR m_szTitle[64] = L"Title Scene";
