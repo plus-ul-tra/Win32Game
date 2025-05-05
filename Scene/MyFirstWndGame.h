@@ -84,7 +84,7 @@ private:
     BitmapInfo* m_pBallBitmapInfo = nullptr;
     BitmapInfo* m_pButtonBitmapInfo = nullptr;
     BitmapInfo* m_pBackgroundBitmapInfo = nullptr;
-
+    BitmapInfo* m_pScoreBitmapInfo = nullptr;
     BitmapInfo* m_pPlayBackgroundBitmapInfo = nullptr;
 
 
@@ -102,6 +102,7 @@ public:
     BitmapInfo* GetPlayBackgroundBitmapInfo() const { return m_pPlayBackgroundBitmapInfo; }
     BitmapInfo* GetKeyGuideBitmapInfo() const { return m_pKeyGuideBitmapInfo; }
     BitmapInfo* GetButtonBitmapInfo() const { return m_pButtonBitmapInfo; }
+    BitmapInfo* GetScoreBitmapInfo() const { return m_pScoreBitmapInfo; }
    
 #pragma endregion
 };

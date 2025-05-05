@@ -4,7 +4,7 @@ class GameObjectBase;
 class GameObject;
 class MyFirstWndGame;
 
-constexpr int MaxScore = 10;
+constexpr int MAX_SCORE = 10;
 class PlayScene :public Scene
 {
  public:
@@ -39,6 +39,7 @@ private:
     Player* GetPlayer(int num) const { return(Player*)m_GameObjectPtrTable[num]; }  //downcast;
     Ball* GetBall() const { return(Ball*)m_GameObjectPtrTable[2]; }
     Net* GetNet() const { return(Net*)m_GameObjectPtrTable[3]; }
+    ScoreBoard* GetScore(int num) const {return(ScoreBoard*)m_GameObjectPtrTable[num];}
     MyFirstWndGame* m_pGame = nullptr;
     RECT m_rect = { 0, 0, 0, 0 };
 };

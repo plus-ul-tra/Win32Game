@@ -67,6 +67,9 @@ void PlayScene::Update(float deltaTime)
             m_GameObjectPtrTable[i]->Update(deltaTime);
         }
     }
+    if (m_player1Score == MAX_SCORE || m_player2Score == MAX_SCORE) {
+        m_pGame->ChangeScene(SceneType::SCENE_ENDING);
+    }
 }
 
 void PlayScene::Render(HDC hDC)
@@ -87,6 +90,9 @@ void PlayScene::SetNewRound()
     static Player* p1 = GetPlayer(0);
     static Player* p2 = GetPlayer(1); // 추가
     static Ball* ball = GetBall();
+    static ScoreBoard* score1 = GetScore(4);
+    static ScoreBoard* score2 = GetScore(5);
+
         p1->SetPosition(m_pGame->GetWidth() / 7, m_pGame->GetHeight() - p1->GetHeight());
         p2->SetPosition((m_pGame->GetWidth() / 7) * 6, m_pGame->GetHeight() - p2->GetHeight());
         ball->SetSpeed(0.4f, 0.4f);
@@ -94,12 +100,14 @@ void PlayScene::SetNewRound()
         if (m_winner == 1) {
             ball->SetPosition((m_pGame->GetWidth() / 7), m_pGame->GetHeight() / 2);
             m_player1Score++;
+            score1->UpdateFrame(m_player1Score);
         }
         else if (m_winner == 2) {
             ball->SetPosition((m_pGame->GetWidth() / 7) * 6, m_pGame->GetHeight() / 2);
             m_player2Score++;
+            score2->UpdateFrame(m_player2Score);
         }
-        std::cout << m_player1Score << ":" << m_player2Score << std::endl;
+        //std::cout << m_player1Score << ":" << m_player2Score << std::endl;
         m_isScore = false;
         m_roundTimer = 1000.0f;
 
@@ -137,7 +145,7 @@ void PlayScene::Enter()
 
 void PlayScene::Leave()
 {
-
+    std::cout << "Leave 호출" << std::endl;
 }
 
 void PlayScene::CreatePlayer(int num)
@@ -147,6 +155,7 @@ void PlayScene::CreatePlayer(int num)
 
     //GameObject* pNewObject = new GameObject(ObjectType::PLAYER);
     Player* pNewObject = new Player(ObjectType::PLAYER);
+    ScoreBoard* pNewScore = new ScoreBoard(ObjectType::UI);
     pNewObject->SetSpeed(0.35f,0.5f);   
     pNewObject->SetWidth(150); 
     pNewObject->SetHeight(150); 
@@ -154,16 +163,32 @@ void PlayScene::CreatePlayer(int num)
     //pNewObject->SetBoundaryInfo(m_pGame->GetWidth(), m_pGame->GetHeight());
 
     if (num == 0) {
+        pNewObject->playerIndex = num;
         pNewObject->SetName("Player1");
-        pNewObject->SetPosition(m_pGame->GetWidth()/7, m_pGame->GetHeight()- pNewObject->GetHeight());  
+        pNewObject->SetPosition(m_pGame->GetWidth()/7, m_pGame->GetHeight()- pNewObject->GetHeight());
         pNewObject->SetPlayerBoundaryInfo(0,(m_pGame->GetWidth()/2)-30, m_pGame->GetHeight());
         pNewObject->SetBitmapInfo(m_pGame->GetPlayerBitmapInfo(), 7, 4);
+
+        pNewScore->SetWidth(878);
+        pNewScore->SetHeight(779);
+        pNewScore->SetBitmapInfo(m_pGame->GetScoreBitmapInfo(),4,3);
+        pNewScore->SetPosition(0.0f,50.0f);
+        pNewScore->SetScale(0.1f, 0.1f);
+        m_GameObjectPtrTable[4] = pNewScore;
     }
     else if (num == 1) {
+        pNewObject->playerIndex = num;
         pNewObject->SetName("Player2");
         pNewObject->SetPosition((m_pGame->GetWidth() / 7) * 6 , m_pGame->GetHeight()-pNewObject->GetHeight()); //생성 위치
         pNewObject->SetPlayerBoundaryInfo((m_pGame->GetWidth() / 2)+30, m_pGame->GetWidth(), m_pGame->GetHeight());
         pNewObject->SetBitmapInfo(m_pGame->GetPlayer2BitmapInfo(), 7, 4);
+
+        pNewScore->SetWidth(878);
+        pNewScore->SetHeight(779);
+        pNewScore->SetBitmapInfo(m_pGame->GetScoreBitmapInfo(), 4, 3);
+        pNewScore->SetPosition(900.0f, 50.0f);
+        pNewScore->SetScale(0.1f, 0.1f);
+        m_GameObjectPtrTable[5] = pNewScore;
     }
 
     
@@ -244,6 +269,8 @@ void PlayScene::UpdatePlayerInfo() //physics
     static Player* p2 = GetPlayer(1); // 추가
     static Ball* ball = GetBall();
     static Net* net = GetNet();
+    //static Ui* score1 = GetScore(4); //p1
+    //static Ui* score2 = GetScore(5); //p2
 
     assert(p1 != nullptr);
     assert(p2 != nullptr);
@@ -267,7 +294,7 @@ void PlayScene::UpdatePlayerInfo() //physics
             if (learning::Intersect(*p1->m_pColliderBox, *ball->m_pColliderBox)) {
                 ball->m_isHit =true;
                 ball->SetDirection({ 1.0f, 0.7f });
-                printf("Spiked!\n");
+                
             }
         }
     }
@@ -293,7 +320,7 @@ void PlayScene::UpdatePlayerInfo() //physics
             if (learning::Intersect(*p2->m_pColliderBox, *ball->m_pColliderBox)) {
                 ball->m_isHit = true;
                 ball->SetDirection({ -1.0f,0.7f });
-                printf("Spiked!\n");
+                
             }
         }
     }

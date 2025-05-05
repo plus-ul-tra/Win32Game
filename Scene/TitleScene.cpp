@@ -2,6 +2,7 @@
 #include "MyFirstWndGame.h"
 #include "GameObject.h"
 #include "Utillity.h"
+#include<iostream>
 #include <assert.h>
 
 using namespace learning;
@@ -90,11 +91,12 @@ void TitleScene::Render(HDC hDC)
 
 void TitleScene::Finalize()
 {
-    if (m_pBackground)
-    {
         delete m_pBackground;
+        delete m_pKeyGuide;
+        delete m_pButton;
         m_pBackground = nullptr;
-    }
+        m_pKeyGuide = nullptr;
+        m_pButton = nullptr;
 }
 
 void TitleScene::Enter()
@@ -104,5 +106,6 @@ void TitleScene::Enter()
 
 void TitleScene::Leave()
 {
+    std::cout << "Leave È£Ãâ" << std::endl;
 }
 

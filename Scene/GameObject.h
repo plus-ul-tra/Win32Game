@@ -137,6 +137,7 @@ protected:
 
 class Player : public GameObject {
 public:
+    int playerIndex = 0;
     bool prevEnterPressed = false;
     bool prevZPressed = false;
     bool m_isSkill = false;
@@ -181,7 +182,7 @@ public:
     int  m_winPlayer = 0;
 protected:
 
-    FrameFPos m_frameXY[1] = { { 0, 0 }, };
+    //FrameFPos m_frameXY[1] = { { 0, 0 }, };
     void SetWinner();
     bool m_isCollision = false;
     int m_frameWidth = 0;
@@ -248,4 +249,21 @@ protected:
     float m_scaleY = 1.0f;
     void DrawBitmap(HDC hdc);
     BitmapInfo* m_pBitmapInfo = nullptr;
+};
+
+class ScoreBoard :public Ui {
+    using BitmapInfo = renderHelp::BitmapInfo;
+public:
+    void UpdateFrame(int score);
+    ScoreBoard(const Ui&) = delete;
+    ScoreBoard(ObjectType type) : Ui(type) {}
+    ~ScoreBoard()override;
+    void Update(float deltaTime) override;
+    void Render(HDC hdc) override;
+    void Move(float deltaTime) override;
+    void SetBitmapInfo(BitmapInfo* bitmapInfo, int widthCut, int heightCut);
+protected:
+    void DrawBitmap(HDC hdc);
+    BitmapInfo* m_pBitmapInfo = nullptr;
+
 };

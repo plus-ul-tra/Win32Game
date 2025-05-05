@@ -51,6 +51,8 @@ bool MyFirstWndGame::Initialize()
     m_pKeyGuideBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/ButtonGuide.png");
     m_pButtonBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/Button.png");
     m_pPlayBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/playground2.png");
+    m_pScoreBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/Score.png");
+
 
     //
     if (m_pPlayer1BitmapInfo == nullptr || m_pBallBitmapInfo == nullptr
@@ -124,7 +126,6 @@ void MyFirstWndGame::Finalize()
             m_pScenes[i] = nullptr;
         }
     }
-
     __super::Destroy();
 
 }

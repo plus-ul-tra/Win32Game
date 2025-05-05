@@ -162,6 +162,7 @@ void GameObject::UpdateFrame(float deltaTime)
         m_frameTime = 0.0f;
         m_frameIndex = (m_frameIndex + 1) % (m_frameCount);
     }
+    
 }
 
 void GameObjectBase::SetName(const char* name)
@@ -224,7 +225,12 @@ void Background::DrawBitmap(HDC hdc)
 
 void Player::Update(float deltaTime)
 {
-    UpdateFrame(deltaTime);
+    if (m_isSkill && playerIndex==0) m_frameIndex = 16;
+    if (m_isSkill && playerIndex == 1) m_frameIndex = 18;
+    else {
+        UpdateFrame(deltaTime);
+    }
+    
     Skill(deltaTime);
     Move(deltaTime);
 
@@ -234,7 +240,7 @@ void Player::Update(float deltaTime)
         if (m_slideCooldownTimer >= 800.0f)
         {
             m_isSlideOnCooldown = false;
-            printf("슬라이딩 쿨타임 종료\n");
+            //printf("슬라이딩 쿨타임 종료\n");
         }
     }
     
@@ -459,4 +465,81 @@ void Ui::DrawBitmap(HDC hdc)
     DeleteDC(hBitmapDC);
 }
 
+void ScoreBoard::UpdateFrame(int score)
+{
+    m_frameIndex = score;
+}
 
+ScoreBoard::~ScoreBoard()
+{
+}
+
+void ScoreBoard::Update(float deltaTime)
+{
+}
+
+void ScoreBoard::Render(HDC hdc)
+{
+    DrawBitmap(hdc);
+}
+
+void ScoreBoard::Move(float deltaTime)
+{
+}
+
+void ScoreBoard::SetBitmapInfo(BitmapInfo* bitmapInfo, int widthCut, int heightCut)
+{
+    assert(m_pBitmapInfo == nullptr && "BitmapInfo must be null!");
+
+    m_pBitmapInfo = bitmapInfo;
+
+    m_frameWidth = m_pBitmapInfo->GetWidth() / widthCut;
+    m_frameHeight = m_pBitmapInfo->GetHeight() / heightCut;
+    m_frameIndex = 0;
+
+    const int maxFrameCount = widthCut * heightCut;
+
+    for (int y = 0; y < heightCut; ++y)
+    {
+        for (int x = 0; x < widthCut; ++x)
+        {
+            int index = y * widthCut + x;
+            if (index >= maxFrameCount)
+                return;
+
+            m_frameXY[index].x = x * m_frameWidth;
+            m_frameXY[index].y = y * m_frameHeight;
+        }
+    }
+}
+
+void ScoreBoard::DrawBitmap(HDC hdc)
+{
+  
+    //std::cout << "Draw SocreBoard" << std::endl;
+    if (m_pBitmapInfo == nullptr) return;
+    if (m_pBitmapInfo->GetBitmapHandle() == nullptr) return;
+
+    HDC hBitmapDC = CreateCompatibleDC(hdc);
+
+    HBITMAP hOldBitmap = (HBITMAP)SelectObject(hBitmapDC, m_pBitmapInfo->GetBitmapHandle());
+    // BLENDFUNCTION 설정 (알파 채널 처리)
+    BLENDFUNCTION blend = { 0 };
+    blend.BlendOp = AC_SRC_OVER;
+    blend.SourceConstantAlpha = 255;  // 원본 알파 채널 그대로 사용
+    blend.AlphaFormat = AC_SRC_ALPHA;
+    int drawWidth = static_cast<int>(m_width * m_scaleX);
+    int drawHeight = static_cast<int>(m_height * m_scaleY);
+    const int x = m_pos.x;
+    const int y = m_pos.y;
+
+    const int srcX = m_frameXY[m_frameIndex].x;
+    const int srcY = m_frameXY[m_frameIndex].y;
+
+    AlphaBlend(hdc, x, y, drawWidth, drawHeight,
+        hBitmapDC, srcX, srcY, m_frameWidth, m_frameHeight, blend);
+
+    // 비트맵 핸들 복원
+    SelectObject(hBitmapDC, hOldBitmap);
+    DeleteDC(hBitmapDC);
+}
