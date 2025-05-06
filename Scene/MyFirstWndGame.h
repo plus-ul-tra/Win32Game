@@ -86,15 +86,15 @@ private:
     BitmapInfo* m_pBackgroundBitmapInfo = nullptr;
     BitmapInfo* m_pScoreBitmapInfo = nullptr;
     BitmapInfo* m_pPlayBackgroundBitmapInfo = nullptr;
-
+    BitmapInfo* m_pWinUi = nullptr;
+    BitmapInfo* m_pRestart = nullptr;
 
 public:
 
     using Vector2f = learning::Vector2f;
+    int m_winner = 0;
     Vector2f EnemySpawnPosition() const { return Vector2f(m_EnemySpawnPos.x, m_EnemySpawnPos.y); }
     void ResetEnemySpawnPosition() { m_EnemySpawnPos = { 0, 0 }; } //X
-
-
     BitmapInfo* GetPlayerBitmapInfo() const { return m_pPlayer1BitmapInfo; }
     BitmapInfo* GetPlayer2BitmapInfo() const { return m_pPlayer2BitmapInfo; }
     BitmapInfo* GetBallBitmapInfo() const { return m_pBallBitmapInfo; }
@@ -103,6 +103,7 @@ public:
     BitmapInfo* GetKeyGuideBitmapInfo() const { return m_pKeyGuideBitmapInfo; }
     BitmapInfo* GetButtonBitmapInfo() const { return m_pButtonBitmapInfo; }
     BitmapInfo* GetScoreBitmapInfo() const { return m_pScoreBitmapInfo; }
-   
+    BitmapInfo* GetWinBitmapInfo() const { return m_pWinUi; }
+    BitmapInfo* GetRestartBitmapInfo() const { return m_pRestart; }
 #pragma endregion
 };

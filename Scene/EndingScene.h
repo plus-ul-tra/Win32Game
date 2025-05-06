@@ -1,5 +1,8 @@
 #pragma once
 #include "Scene.h"
+
+class MyFirstWndGame;
+
 class EndingScene : public Scene
 {
 public:
@@ -15,6 +18,10 @@ public:
     void FixedUpdate() override {}
     void Update(float deltaTime) override;
     void Render(HDC hDC) override;
-
+private:
+    learning::Vector2f mousepos = { 0,0 };
+    MyFirstWndGame* m_pGame = nullptr;
+    GameObjectBase* m_pButton = nullptr;
+    GameObjectBase* m_pWinBoard = nullptr;
 };
 

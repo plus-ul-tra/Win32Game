@@ -42,8 +42,7 @@ bool MyFirstWndGame::Initialize()
 #pragma region resource
     //Player Bitmap
     m_pPlayer1BitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/pika.png");
-    m_pPlayer2BitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/pika.png");
-    m_pPlayer2BitmapInfo = renderHelp::CreateFlippedBitmap(m_pPlayer2BitmapInfo);
+    m_pPlayer2BitmapInfo = renderHelp::CreateFlippedBitmap(m_pPlayer1BitmapInfo);
     //Ball
     m_pBallBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/ball.png");
     //UI
@@ -51,7 +50,9 @@ bool MyFirstWndGame::Initialize()
     m_pKeyGuideBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/ButtonGuide.png");
     m_pButtonBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/Button.png");
     m_pPlayBackgroundBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/playground2.png");
-    m_pScoreBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/Score.png");
+    m_pScoreBitmapInfo = renderHelp::CreateBitmapInfo(L"../Resource/Score1.png");
+    m_pWinUi = renderHelp::CreateBitmapInfo(L"../Resource/Win.png");
+    m_pRestart = renderHelp::CreateBitmapInfo(L"../Resource/Retry.png");
 
 
     //

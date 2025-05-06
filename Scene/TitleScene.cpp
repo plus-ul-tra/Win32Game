@@ -91,21 +91,21 @@ void TitleScene::Render(HDC hDC)
 
 void TitleScene::Finalize()
 {
-        delete m_pBackground;
+        //delete m_pBackground;
         delete m_pKeyGuide;
         delete m_pButton;
-        m_pBackground = nullptr;
+        //m_pBackground = nullptr;
         m_pKeyGuide = nullptr;
         m_pButton = nullptr;
 }
 
 void TitleScene::Enter()
 {
-   
+    m_pGame->ResetEnemySpawnPosition();
 }
 
 void TitleScene::Leave()
 {
-    std::cout << "Leave 호출" << std::endl;
+    std::cout << "Title Leave 호출" << std::endl;
 }
 

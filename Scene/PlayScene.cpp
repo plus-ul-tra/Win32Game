@@ -8,7 +8,7 @@
 
 using namespace learning;
 
-constexpr int MAX_GAME_OBJECT_COUNT = 10;
+constexpr int MAX_GAME_OBJECT_COUNT = 6;
 
 void PlayScene::Initialize(NzWndBase* pWnd)  
 {
@@ -51,6 +51,7 @@ void PlayScene::FixedUpdate()
 
 void PlayScene::Update(float deltaTime)
 {
+    
     if (m_isScore) {
         m_roundTimer -= deltaTime;
         if (m_roundTimer <= 0.0f) {
@@ -68,6 +69,13 @@ void PlayScene::Update(float deltaTime)
         }
     }
     if (m_player1Score == MAX_SCORE || m_player2Score == MAX_SCORE) {
+        if (m_player1Score > m_player2Score) {
+            m_pGame->m_winner = 0; 
+        }
+        else {
+            m_pGame->m_winner = 1;
+        }
+        std::cout << m_pGame->m_winner<<std::endl;
         m_pGame->ChangeScene(SceneType::SCENE_ENDING);
     }
 }
@@ -90,8 +98,8 @@ void PlayScene::SetNewRound()
     static Player* p1 = GetPlayer(0);
     static Player* p2 = GetPlayer(1); // 추가
     static Ball* ball = GetBall();
-    static ScoreBoard* score1 = GetScore(4);
-    static ScoreBoard* score2 = GetScore(5);
+    ScoreBoard* score1 = GetScore(4);
+    ScoreBoard* score2 = GetScore(5);
 
         p1->SetPosition(m_pGame->GetWidth() / 7, m_pGame->GetHeight() - p1->GetHeight());
         p2->SetPosition((m_pGame->GetWidth() / 7) * 6, m_pGame->GetHeight() - p2->GetHeight());
@@ -115,11 +123,11 @@ void PlayScene::SetNewRound()
 
 void PlayScene::Finalize()
 {
-    if (m_pBackground)
+    /*if (m_pBackground)
     {
         delete m_pBackground;
         m_pBackground = nullptr;
-    }
+    }*/
    if (m_GameObjectPtrTable)
    {
        for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
@@ -136,7 +144,10 @@ void PlayScene::Finalize()
 }
 
 void PlayScene::Enter()
-{ 
+{
+    m_isScore = false;
+    m_player1Score = 0;
+    m_player2Score = 0;
     CreatePlayer(0); //1P
     CreatePlayer(1); //2P
     CreateBall(); 
@@ -145,7 +156,19 @@ void PlayScene::Enter()
 
 void PlayScene::Leave()
 {
-    std::cout << "Leave 호출" << std::endl;
+    if (m_GameObjectPtrTable)
+    {
+        for (int i = 0; i < MAX_GAME_OBJECT_COUNT; ++i)
+        {
+            if (m_GameObjectPtrTable[i])
+            {
+                delete m_GameObjectPtrTable[i];
+                m_GameObjectPtrTable[i] = nullptr;
+            }
+        }
+
+        //delete[] m_GameObjectPtrTable;
+    }
 }
 
 void PlayScene::CreatePlayer(int num)
@@ -265,13 +288,13 @@ void PlayScene::CreateNet() {
 }
 void PlayScene::UpdatePlayerInfo() //physics
 {
-    static Player* p1 = GetPlayer(0);
-    static Player* p2 = GetPlayer(1); // 추가
-    static Ball* ball = GetBall();
-    static Net* net = GetNet();
+    Player* p1 = GetPlayer(0);
+    Player* p2 = GetPlayer(1); // 추가
+    Ball* ball = GetBall();
+    Net* net = GetNet();
     //static Ui* score1 = GetScore(4); //p1
     //static Ui* score2 = GetScore(5); //p2
-
+    //std::cout << "updaaaa" << std::endl;
     assert(p1 != nullptr);
     assert(p2 != nullptr);
     assert(m_pGame != nullptr && "MyFirstWndGame is null!");
