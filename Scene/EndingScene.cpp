@@ -44,6 +44,12 @@ void EndingScene::Update(float deltaTime)
 
 void EndingScene::Render(HDC hDC)
 {
+    //RECT rect;
+    RECT rect = { 0, 0, m_pGame->GetWidth(), m_pGame->GetHeight() };
+    //learning::GetScreenRect(rect); // 또는 직접 RECT { left, top, right, bottom } 설정
+    HBRUSH hBrush = CreateSolidBrush(RGB(247, 203, 74)); // 어두운 회색 배경
+    FillRect(hDC, &rect, hBrush);
+    DeleteObject(hBrush);
     m_pButton->Render(hDC);
     m_pWinBoard->Render(hDC);
 }

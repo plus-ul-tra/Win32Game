@@ -88,7 +88,7 @@ private:
     BitmapInfo* m_pPlayBackgroundBitmapInfo = nullptr;
     BitmapInfo* m_pWinUi = nullptr;
     BitmapInfo* m_pRestart = nullptr;
-
+    
 public:
 
     using Vector2f = learning::Vector2f;

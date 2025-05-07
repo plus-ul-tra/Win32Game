@@ -95,9 +95,9 @@ void PlayScene::Render(HDC hDC)
 
 void PlayScene::SetNewRound()
 {
-    static Player* p1 = GetPlayer(0);
-    static Player* p2 = GetPlayer(1); // 추가
-    static Ball* ball = GetBall();
+    /*static*/ Player* p1 = GetPlayer(0);
+    /*static*/ Player* p2 = GetPlayer(1); // 추가
+    /*static*/ Ball* ball = GetBall();
     ScoreBoard* score1 = GetScore(4);
     ScoreBoard* score2 = GetScore(5);
 
@@ -236,7 +236,7 @@ void PlayScene::CreateBall()
 
     // Ball Spawn pos
     pNewObject->SetPosition((m_pGame->GetWidth() / 7), m_pGame->GetHeight()/2);
-    pNewObject->SetSpeed(0.4f,0.4f);
+    pNewObject->SetSpeed(0.5f,0.5f);
     pNewObject->SetDirection({ 0.0f, 1.0f });
     pNewObject->SetWidth(100); 
     pNewObject->SetHeight(100); 
@@ -269,7 +269,7 @@ void PlayScene::CreateNet() {
     Net* pNewObject = new Net(ObjectType::NET);
     pNewObject->SetName("Net");
     pNewObject->SetPosition((m_pGame->GetWidth() / 2), m_pGame->GetHeight() - 100);
-    pNewObject->SetColliderBox(10.0f, 350.0f);
+    pNewObject->SetColliderBox(5.0f, 350.0f);
     int i = 0;
     while (++i < MAX_GAME_OBJECT_COUNT)
     {

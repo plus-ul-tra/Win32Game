@@ -334,7 +334,7 @@ void Ball::Move(float deltaTime)
     // º®¿¡ ´ê¾ÒÀ»¶§ ¹æÇâ¸¸ ¹Ù²îµµ·Ï
     if (m_pos.y + m_height > m_boundaryHeight) {
         m_pos.y = m_boundaryHeight - m_height;
-        m_speedY *= -0.4f; //¹Ù´Ú
+        m_speedY *= -0.3f; //¹Ù´Ú
         SetWinner();        
     }
     if (m_pos.y - m_height < -padding) {
@@ -343,14 +343,14 @@ void Ball::Move(float deltaTime)
     }
     if (m_pos.x - m_width < -padding) {
         m_pos.x = -padding + m_width;
-        m_speedX *= -1.0f;
+        m_speedX *= -0.7f;
     }
     if (m_pos.x + m_width > m_boundaryWidth + padding) {
         m_pos.x = m_boundaryWidth - m_width + padding;
-        m_speedX *= -1.0;
+        m_speedX *= -0.7;
     }
     m_isCollision = false;
-    m_speedY += 0.0010f;
+    m_speedY += 0.0007f;
 }
 
 void Ball::CheckCollision(ColliderCircle const& p1, ColliderCircle const& p2)
@@ -362,8 +362,8 @@ void Ball::CheckCollision(ColliderCircle const& p1, ColliderCircle const& p2)
         m_isCollision = true;
         //m_dir = learning::CollisionOccured(*m_pColliderCircle, p1);
         m_dir.x = Colli(*m_pColliderCircle, p1);
-        m_speedY = -0.8f;
-        m_speedX = 0.8f;
+        m_speedY = -0.9f;
+        m_speedX = 0.9f;
         
     }
     if (learning::Intersect(*m_pColliderCircle, p2) /*&& !m_isCollision*/) {
@@ -371,8 +371,8 @@ void Ball::CheckCollision(ColliderCircle const& p1, ColliderCircle const& p2)
         //std::cout << "p2¿Í Ãæµ¹!!" << std::endl;
         m_isCollision = true;
         m_dir.x = Colli(*m_pColliderCircle, p2);
-        m_speedY = -0.8f;
-        m_speedX = 0.8f;
+        m_speedY = -0.9f;
+        m_speedX = 0.9f;
     }
 }
 
@@ -380,10 +380,10 @@ void Ball::CollisionNet(ColliderBox const& net)
 {
     if (learning::Intersect(*m_pColliderBox, net)) {
         if (m_pos.y + m_height < m_boundaryHeight - 200) {
-            m_speedY *= -1.0f;
+            m_speedY *= -0.9f;
         }
         else {
-            m_speedX *= -1.0f;
+            m_speedX *= -0.9f;
         }
         
     }
